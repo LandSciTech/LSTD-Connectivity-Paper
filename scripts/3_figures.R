@@ -2,7 +2,10 @@
 ## Step 3: Produce figures
 
 # Load libraries
+library(ggplot2)     # For visualization
 library(ggcorrplot)  # For visualization
+library(ade4)        # For NMDS
+library(vegan)       # For NMDS
 
 # -------------------------------------------------------------------------
 
@@ -55,3 +58,36 @@ ord <- corrMatOrder(cm, order="hclust")
 newcolours <- mycolors[ord]
 
 corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="shade")
+
+
+# -------------------------------------------------------------------------
+
+#normalize data
+fau<-decostand(all_stats_wide[,4:53], method="normalize", 1)
+
+#normality assumptions check
+example_NMDS=metaMDS(fau,k=2,trymax=100)
+
+#plot
+plot(example_NMDS)
+
+#extract NMDS scores (x and y coordinates)
+data_scores = as.data.frame(scores(example_NMDS))
+
+#add Ecozone name
+data_scores$nameEco = all_stats_wide$nameEco
+
+#add Ecozone acronym
+data_scores$ecoS = all_stats_wide$ecoS
+
+#add paID
+data_scores$paArea = all_stats_wide$paArea
+
+#add columns to data frame
+data_scores = cbind(data_scores,all_stats_wide[,5:53])
+head(data_scores)
+
+#plot WITH NO grouping
+ggplot(data_scores, aes(x = NMDS1, y = NMDS2, label=NA)) +
+  geom_point(aes(color = factor(nameEco),bg="black",size = paArea))
+
