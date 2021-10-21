@@ -19,7 +19,7 @@ t <- c(4, 23, 91, 361, 1455)
 mean_displacement <- c(2, 5, 10, 20, 40)
 
 t_df <- tibble(t = t, 
-               mean_displacement = mean_displacement)
+               mean_displacement = (mean_displacement * 1000)/res(landscape)) 
 
 scale_factor <- 300
 
