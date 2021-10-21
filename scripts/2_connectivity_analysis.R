@@ -15,7 +15,7 @@ source('scripts/0_helper_functions.R')
 
 # Parameter grid ----------------------------------------------------------
 
-t <- c(4, 23, 91, 361, 1455)
+t <- c(4, 23, 91, 361, 1455) # NOTE: t is calibrated for 1km raster
 mean_displacement <- c(2, 5, 10, 20, 40)
 
 t_df <- tibble(t = t, 
