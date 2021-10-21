@@ -178,7 +178,8 @@ run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6){
       
     } else if (type == 'UNIFORM'){
       
-      k <- uniformKernel(displacement, useAveDist = TRUE)
+      k <- uniformKernel(displacement, 
+                         useAveDist = TRUE)
       
       tictoc::tic()
       trMap <- pfocal(as.matrix(occ_raster), 
@@ -195,17 +196,20 @@ run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6){
       
       k <- exponentialKernel(displacement,
                              negligible = negligible)
+      k <- k/sum(k)
+      
+      occ_raster_z <- as.matrix(occ_raster) ^ 0.5
       
       tictoc::tic()
-      trMap <- pfocal(as.matrix(landscape) ^ 0.5,
+      trMap <- pfocal(occ_raster_z,
                       na_flag = 0,
-                      kernel = k) *100
+                      kernel = k) * occ_raster_z
       tictoc::toc() -> clock
       (clock$toc - clock$tic) -> output_table$full_elapsed[output_table$t == t]
       
       gc()
       
-      ((raster(trMap, template = landscape) * parameters$occ_multiplier)) |> list() -> 
+      (raster(trMap, template = landscape)) |> list() -> 
         output_table$output_map[output_table$t == t]
       
     } else {
