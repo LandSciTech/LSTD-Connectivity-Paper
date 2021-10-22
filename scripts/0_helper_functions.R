@@ -54,20 +54,20 @@ produce_resistance <- function(landscape,
 # Dispatch method ---------------------------------------------------------
 
 run_connectivity <- function(landscape, parameters, t_df, 
-                             out_dir = "outputs/rasters"){
+                             out_dir = "outputs/rasters",sourceMap=NULL){
   
   if (parameters$type == 'SAMC') {
-    out <- run_samc(landscape, parameters, t_df)
+    out <- run_samc(landscape, parameters, t_df,sourceMap=sourceMap)
   } else if (parameters$type %in% 
              c('EXPONENTIAL', 'UNIFORM', 'INTACTNESS')) {
-    out <- run_kernel(landscape, parameters, t_df, parameters$type)
+    out <- run_kernel(landscape, parameters, t_df, parameters$type,sourceMap=sourceMap)
   } else {
     stop("Analysis type not recognized.")
   }
   
   out <- out %>%
     mutate(sce = paste0(parameters$sce, 
-                        t_df$mean_displacement))
+                        t_df$scale))
   
   paths <- file.path(out_dir, paste0(out$sce, ".tif") )
   writeRaster(stack(out$output_map), filename = paths, bylayer = TRUE, 
@@ -81,7 +81,7 @@ run_connectivity <- function(landscape, parameters, t_df,
 
 # Analysis functions ------------------------------------------------------
 
-run_samc <- function(landscape, parameters, t_df){
+run_samc <- function(landscape, parameters, t_df,sourceMap=NULL){
   
   # browser()
   
@@ -105,7 +105,12 @@ run_samc <- function(landscape, parameters, t_df){
   
   # Prepare landscape
   landscape[is.na(landscape)] <- 0
-  occ_raster <- landscape * parameters$occ_multiplier
+  
+  if(is.null(sourceMap)){
+    occ_raster <- landscape * parameters$occ_multiplier
+  }else{
+    occ_raster <- sourceMap
+  }
   
   # Calculate steps
   
@@ -136,7 +141,7 @@ run_samc <- function(landscape, parameters, t_df){
   return(output_table)
 }
 
-run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6){
+run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6,sourceMap=NULL){
   
   # browser()
   
@@ -145,7 +150,11 @@ run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6){
   
   # Prepare landscape
   landscape[is.na(landscape)] <- 0
-  occ_raster <- landscape * parameters$occ_multiplier
+  if(is.null(sourceMap)){
+    occ_raster <- landscape * parameters$occ_multiplier
+  }else{
+    occ_raster= sourceMap
+  }
   
   output_table <- expand_grid(t_df, 
                               cache_elapsed = NA,
@@ -196,8 +205,7 @@ run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6){
       
       k <- exponentialKernel(displacement,
                              negligible = negligible)
-      k <- k/sum(k)
-      
+
       occ_raster_z <- as.matrix(occ_raster) ^ 0.5
       
       tictoc::tic()

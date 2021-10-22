@@ -15,11 +15,16 @@ source('scripts/0_helper_functions.R')
 
 # Parameter grid ----------------------------------------------------------
 
+#for 300 m raster, t <- c(40,250,1000,4001,16007)
+#for 900 m raster, t <- c(4,28,111,444,1778)
+#for 1000 m raster, t <- c(4,22,90,360,1440)
+
 t <- c(4, 23, 91, 361, 1455) # NOTE: t is calibrated for 1km raster
 mean_displacement <- c(2, 5, 10, 20, 40)
 
 t_df <- tibble(t = t, 
                mean_displacement = (mean_displacement * 1000)/res(landscape)) 
+t_df$scale = mean_displacement #label results with whole numbers
 
 scale_factor <- 300
 
