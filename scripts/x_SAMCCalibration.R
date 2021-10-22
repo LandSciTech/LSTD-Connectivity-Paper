@@ -1,11 +1,4 @@
-
-#install.packages("samc")
-#samc experiments
 library(raster)
-library(RColorBrewer)
-library(imager)
-library(tidyverse)
-library(viridis)
 library(samc)
 
 baseDir = "C:/Users/HughesJo/Documents/InitialWork/Connectivity/ConnectivityMetricsForMonitoring/IALEiposter/KernelVisualizations"
@@ -74,10 +67,8 @@ if(runCalibration){
 
   tSet
 
-
   write.csv(tSet,paste0(outDir,"/SAMCCalibrationTable.csv"))
   plot(t~meanDisplacement,data=tSet)
-  library(mgcv)
 
   mm = loess(t~meanDisplacement,data=tSet,span=0.1)
 
