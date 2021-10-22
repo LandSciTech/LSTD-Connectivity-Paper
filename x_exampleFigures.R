@@ -108,7 +108,7 @@ doPlots$displacement = NA
 
 plotSet = list()
 for(i in 1:nrow(doPlots)){
-  #i = 1
+  #i = 4
   dbit =doPlots[i,]
   params = subset(parameters,sce==dbit$shape)
   m = paste0(dbit$scale,dbit$shape)
@@ -127,19 +127,15 @@ for(i in 1:nrow(doPlots)){
     doPlots$time[i] = tt[3]
     
     trMap = raster(gsub(".tif","_1.tif",trMap$output_map,fixed=T))
+    trMap=trMap/params$occ_multiplier
     
     kvis = run_connectivity(landscape = exQuality,
                             parameters = params, 
                             t_df = t_df,out_dir = outDir,sourceMap = cPatches)
     kvis = raster(gsub(".tif","_1.tif",kvis$output_map,fixed=T))
-    kvis = kvis
     kvis[kvis<=10^-6]=NA
-    
-    
-    
-    trMap=trMap/params$occ_multiplier
 
-
+    trMap=trMap/cellStats(trMap,"max") #rescale for comparison amongst methods
   }else if (grepl("P",dbit$shape)){
     #parc
     dbar=dbit$scale #*res(exQuality)[1]/cellDim
@@ -227,7 +223,7 @@ for(i in 1:nrow(doPlots)){
   plot(paBound,add=T,border="black",axes=FALSE)
   #plot(rasterToContour(kvis),add=T,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
   dev.off()
-  
+
   
   trMap[1,1]=1;trMap[1,2]=0
   trMapH[1,1]=1;trMapH[1,2]=0
