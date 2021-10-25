@@ -15,15 +15,15 @@ source('scripts/0_helper_functions.R')
 
 # Parameter grid ----------------------------------------------------------
 
-#for 300 m raster, t <- c(40,250,1000,4001,16007)
-#for 900 m raster, t <- c(4,28,111,444,1778)
-#for 1000 m raster, t <- c(4,22,90,360,1440)
+# for 300 m raster, t <- c(40,250,1000,4001,16007)
+# for 900 m raster, t <- c(4,28,111,444,1778)
+# for 1000 m raster, t <- c(4,22,90,360,1440)
 
-t <- c(4, 23, 91, 361, 1455) # NOTE: t is calibrated for 1km raster
+t <- c(4,22,90,360,1440) # NOTE: t is calibrated for 1km raster
 mean_displacement <- c(2, 5, 10, 20, 40)
 
 t_df <- tibble(t = t, 
-               mean_displacement = (mean_displacement * 1000)/res(landscape)) 
+               mean_displacement = (mean_displacement * 1000)/res(landscape)[1]) 
 t_df$scale = mean_displacement #label results with whole numbers
 
 scale_factor <- 300
@@ -70,6 +70,10 @@ gc()
 
 # -------------------------------------------------------------------------
 
+# Remove unwanted combinations 
+parameters <- parameters %>% 
+  filter(!(sce %in% c("NL", "CH", "CL")))
+
 # Run on grid
 out_list <- vector(mode = "list", length = nrow(parameters))
 
@@ -106,18 +110,5 @@ zonal_stats <- lapply(FUN = function(row){
 }, out_df_split)
 
 all_stats <- bind_rows(zonal_stats)
-
-base_zonal <- zonal(x = landscape*100, 
-                    z = protected_area, 
-                    fun = "mean", na.rm = TRUE) %>% 
-  as_tibble() %>% 
-  mutate(paID = zone) %>% 
-  left_join(protected_area_df) %>% 
-  rename(base_mean = mean)
-
-all_stats <- all_stats %>% 
-  left_join(base_zonal, 
-            by = c("zone", "paID", "paName", "nameEco", "patchArea")) %>% 
-  mutate(ratio = base_mean/mean)
 
 saveRDS(all_stats, "outputs/objects/all_stats.rds")

@@ -38,8 +38,8 @@ writeRaster(protected_area, "outputs/tmp/paRaster_reproj_masked.tif",
 
 # -------------------------------------------------------------------------
 
-landscape <- raster("data/CanCostMap/costmap_can_mask_rescaled_aggregated.tif")
-protected_area <- raster("data/ProtectedAreas/protectedareas_new_landscape.tif")
+landscape <- raster("outputs/tmp/costmap_can_mask_aggregated.tif")
+protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
 
 # Load PA data
 protected_area_df <- read.csv("data/ProtectedAreas/CanadianPAsLookupSubset.csv")
