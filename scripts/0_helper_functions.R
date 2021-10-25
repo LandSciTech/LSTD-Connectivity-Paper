@@ -5,6 +5,13 @@
 # Prepare inputs ----------------------------------------------------------
 
 scale_raster <- function(to_be_scaled, 
+                        the_min, the_max, old_min=0, old_max=1){
+  scaled <- 
+    (to_be_scaled - old_min) * (the_max - the_min) / (old_max - to_be_scaled_min) + the_min
+  return(scaled)
+}
+
+scale_raster_old <- function(to_be_scaled, 
                          the_min, the_max){
   to_be_scaled_min <- cellStats(to_be_scaled, min, na.rm = TRUE)
   to_be_scaled_max <- cellStats(to_be_scaled, max, na.rm = TRUE)
