@@ -60,8 +60,51 @@ produce_resistance <- function(landscape,
 
 # Dispatch method ---------------------------------------------------------
 
-run_connectivity <- function(landscape, parameters, t_df, 
-                             out_dir = "outputs/rasters",sourceMap=NULL){
+extract_stats <- function(rasters_df, protected_area_raster, 
+                          protected_area_data){
+  
+  out_df_split <- out_df %>% split(.$sce)
+  
+  zonal_stats <- lapply(FUN = function(row){
+    print(row)
+    out_zonal <- zonal(x = raster(row$output_map) %>% 
+                         crop(protected_area_raster), # Important to crop
+                       z = protected_area_raster, 
+                       fun = "mean", na.rm = TRUE) %>% 
+      as_tibble() %>% 
+      mutate(paID = zone) %>% 
+      left_join(protected_area_data) %>% 
+      mutate(sce = row$sce)
+  }, out_df_split)
+  
+  all_stats <- bind_rows(zonal_stats)
+  
+  return(all_stats)
+  
+}
+
+analyse_connectivity <- function(parameters, landscape, t_df, path){
+  
+  out_list <- vector(mode = "list", length = nrow(parameters))
+  
+  for (row in (1:nrow(parameters))){
+    params <- parameters[row,]
+    out_list[[row]] <- run_connectivity(landscape = landscape,
+                                        parameters = params, 
+                                        t_df = t_df, 
+                                        )
+    print(out_list[[row]])
+    gc()
+  }
+  gc()
+  
+  out_df <- bind_rows(out_list)
+  
+  return(out_df)
+}
+
+run_connectivity <- function(landscape, parameters, t_df, ext = NULL,
+                             out_dir = "outputs/rasters", sourceMap=NULL){
   
   if (parameters$type == 'SAMC') {
     out <- run_samc(landscape, parameters, t_df,sourceMap=sourceMap)
@@ -76,7 +119,7 @@ run_connectivity <- function(landscape, parameters, t_df,
     mutate(sce = paste0(parameters$sce, 
                         t_df$scale))
   
-  paths <- file.path(out_dir, paste0(out$sce, ".tif") )
+  paths <- file.path(out_dir, paste0(out$sce, ext, ".tif") )
   writeRaster(stack(out$output_map), filename = paths, bylayer = TRUE, 
               overwrite = TRUE)
   

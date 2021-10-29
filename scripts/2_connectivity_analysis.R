@@ -77,38 +77,24 @@ parameters <- parameters %>%
 # Run on grid
 out_list <- vector(mode = "list", length = nrow(parameters))
 
-for (row in (1:nrow(parameters))){
-  params <- parameters[row,]
-  out_list[[row]] <- run_connectivity(landscape = 1-landscape,
-                                      parameters = params, 
-                                      t_df = t_df)
-  print(out_list[[row]])
-  gc()
-}
-gc()
-
-out_df <- bind_rows(out_list)
+out_df <- analyse_connectivity(parameters, 1-landscape, t_df, 
+                               ext = NULL)
+out_df_no_HF <- analyse_connectivity(parameters, 1-landscape_no_HF, t_df, 
+                                     ext = "no_HF")
 
 saveRDS(out_df, "outputs/objects/out_df.rds")
+saveRDS(out_df_no_HF, "outputs/objects/out_df_no_HF.rds")
 
 # -------------------------------------------------------------------------
 
 out_df <- readRDS("outputs/objects/out_df.rds")
+out_df_no_HF <- readRDS("outputs/objects/out_df_no_HF.rds")
 
-out_df_split <- out_df %>% split(.$sce)
 
-zonal_stats <- lapply(FUN = function(row){
-  print(row)
-  out_zonal <- zonal(x = raster(row$output_map) %>% 
-                       crop(protected_area), # Improtant to crop
-                     z = protected_area, 
-                     fun = "mean", na.rm = TRUE) %>% 
-    as_tibble() %>% 
-    mutate(paID = zone) %>% 
-    left_join(protected_area_df) %>% 
-    mutate(sce = row$sce)
-}, out_df_split)
-
-all_stats <- bind_rows(zonal_stats)
+all_stats <- extract_stats(out_df, protected_area, 
+                           protected_area_df)
+all_stats_no_HF <- extract_stats(out_df_no_HF, protected_area, 
+                                 protected_area_df)
 
 saveRDS(all_stats, "outputs/objects/all_stats.rds")
+saveRDS(all_stats_no_HF, "outputs/objects/all_stats_no_HF.rds")
