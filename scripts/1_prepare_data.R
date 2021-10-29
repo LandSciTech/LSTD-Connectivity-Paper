@@ -13,6 +13,7 @@ library(raster)      # For raster casting from matrix values
 
 # Load the cost map
 landscape <- raster("data/CanCostMap/costmap_can_mask.tif")
+landscape_no_HF <- raster("data/CanCostMap/costmap_can_noHF.tif")
 
 # Load protected area raster
 protected_area <- raster("data/ProtectedAreas/paRaster.tif")
@@ -26,12 +27,17 @@ protected_area <- projectRaster(protected_area,
 # Resample the landscape
 landscape <- resample(landscape, protected_area, 
                       method = "ngb")
+landscape_no_HF <- resample(landscape_no_HF, protected_area, 
+                            method = "ngb")
 
 # Mask the PA
 protected_area <- mask(protected_area, landscape)
+landscape_no_HF <- mask(landscape_no_HF, landscape)
 
 # Write both files out
 writeRaster(landscape, "outputs/tmp/costmap_can_mask_aggregated.tif",
+            overwrite = TRUE)
+writeRaster(landscape_no_HF, "outputs/tmp/costmap_can_mask_aggregated_no_HF.tif",
             overwrite = TRUE)
 writeRaster(protected_area, "outputs/tmp/paRaster_reproj_masked.tif",
             overwrite = TRUE)
@@ -39,6 +45,7 @@ writeRaster(protected_area, "outputs/tmp/paRaster_reproj_masked.tif",
 # -------------------------------------------------------------------------
 
 landscape <- raster("outputs/tmp/costmap_can_mask_aggregated.tif")
+landscape_no_HF <- raster("outputs/tmp/costmap_can_mask_aggregated_no_HF.tif")
 protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
 
 # Load PA data
