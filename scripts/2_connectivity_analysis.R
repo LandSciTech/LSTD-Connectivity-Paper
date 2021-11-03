@@ -75,8 +75,6 @@ parameters <- parameters %>%
   filter(!(sce %in% c("NL", "CH", "CL")))
 
 # Run on grid
-out_list <- vector(mode = "list", length = nrow(parameters))
-
 out_df <- analyse_connectivity(parameters, 1-landscape, t_df, 
                                ext = NULL)
 out_df_no_HF <- analyse_connectivity(parameters, 1-landscape_no_HF, t_df, 
@@ -89,7 +87,6 @@ saveRDS(out_df_no_HF, "outputs/objects/out_df_no_HF.rds")
 
 out_df <- readRDS("outputs/objects/out_df.rds")
 out_df_no_HF <- readRDS("outputs/objects/out_df_no_HF.rds")
-
 
 all_stats <- extract_stats(out_df, protected_area, 
                            protected_area_df)

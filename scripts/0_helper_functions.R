@@ -83,7 +83,7 @@ extract_stats <- function(rasters_df, protected_area_raster,
   
 }
 
-analyse_connectivity <- function(parameters, landscape, t_df, path){
+analyse_connectivity <- function(parameters, landscape, t_df, ext){
   
   out_list <- vector(mode = "list", length = nrow(parameters))
   
