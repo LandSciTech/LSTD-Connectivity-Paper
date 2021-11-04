@@ -9,18 +9,17 @@ library(vegan)       # For NMDS
 
 # -------------------------------------------------------------------------
 
-all_stats <- readRDS("outputs/objects/all_stats.rds")
+all_stats_final <- readRDS("outputs/objects/all_stats_final.rds")
 
 # mapSubsetA <- read.csv("data/mapSetA_exptFullForV.csv")
 # 
-# all_stats <- all_stats %>%
+# all_stats_final <- all_stats_final %>%
 #   filter(paID %in% mapSubsetA$paID)
 
-all_stats_wide <- all_stats %>%
-  select(-mean, -base_mean) %>% 
+all_stats_wide <- all_stats_final %>%
+  select(-c(mean, mean_no_HF)) %>% 
   pivot_wider(names_from = sce,values_from = ratio) %>% 
-  select(-c(1:5)) %>% 
-  drop_na()
+  select(-c(1:7))
 
 all_stats_wide_corrs <- cor(all_stats_wide, 
                             method="spearman")
@@ -30,12 +29,12 @@ ggcorrplot(all_stats_wide_corrs, hc.order= TRUE)
 
 # -------------------------------------------------------------------------
 
-numClusters <-5
+numClusters <-6
 library(corrplot)
 
 # -------------------------------------------------------------------------
 
-all_stats_sub <- all_stats %>% 
+all_stats_sub <- all_stats_final %>% 
   #filter(paID %in% read.csv("input/corPlotInput_w0_sFALSE_np1_venterFALSE_samcBTRUE.csv")$paID) %>% 
   #filter(!stringr::str_detect(.data$sce, "I")) %>% 
   #filter(!stringr::str_detect(.data$sce, "MH")) %>% 
@@ -63,7 +62,8 @@ corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="s
 # -------------------------------------------------------------------------
 
 #normalize data
-fau<-decostand(all_stats_wide[,4:53], method="normalize", 1)
+fau <- decostand(all_stats_wide, method="normalize", 1)
+fau <- all_stats_wide
 
 #normality assumptions check
 example_NMDS=metaMDS(fau,k=2,trymax=100)
