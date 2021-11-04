@@ -34,6 +34,10 @@ landscape_no_HF <- resample(landscape_no_HF, protected_area,
 protected_area <- mask(protected_area, landscape)
 landscape_no_HF <- mask(landscape_no_HF, landscape)
 
+# Scale between 0 and 1
+landscape <- scale_raster(landscape, 0, 1)
+landscape_no_HF <- scale_raster(landscape_no_HF, 0, 1)
+
 # Write both files out
 writeRaster(landscape, "outputs/tmp/costmap_can_mask_aggregated.tif",
             overwrite = TRUE)
