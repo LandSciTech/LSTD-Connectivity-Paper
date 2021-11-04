@@ -4,20 +4,20 @@
 # HELPER FUNCTIONS --------------------------------------------------------
 # Prepare inputs ----------------------------------------------------------
 
-scale_raster <- function(to_be_scaled, 
+scale_raster_bis <- function(to_be_scaled, 
                         the_min, the_max, old_min=0, old_max=1){
   scaled <- 
-    (to_be_scaled - old_min) * (the_max - the_min) / (old_max - to_be_scaled_min) + the_min
+    (to_be_scaled - old_min) * (the_max - the_min) / (old_max - old_min) + the_min
   return(scaled)
 }
 
-scale_raster_old <- function(to_be_scaled, 
+scale_raster <- function(to_be_scaled, 
                          the_min, the_max){
   to_be_scaled_min <- cellStats(to_be_scaled, min, na.rm = TRUE)
   to_be_scaled_max <- cellStats(to_be_scaled, max, na.rm = TRUE)
   scaled <- 
     ((to_be_scaled - to_be_scaled_min) * (the_max - the_min) / 
-       ((cellStats(to_be_scaled, max, na.rm = TRUE) - to_be_scaled_min)) + the_min)
+       ((to_be_scaled_max - to_be_scaled_min)) + the_min)
   return(scaled)
 }
 
@@ -92,7 +92,7 @@ analyse_connectivity <- function(parameters, landscape, t_df, ext){
     out_list[[row]] <- run_connectivity(landscape = landscape,
                                         parameters = params, 
                                         t_df = t_df, 
-                                        )
+                                        ext = ext)
     print(out_list[[row]])
     gc()
   }
