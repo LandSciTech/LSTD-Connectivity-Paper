@@ -63,7 +63,7 @@ produce_resistance <- function(landscape,
 extract_stats <- function(rasters_df, protected_area_raster, 
                           protected_area_data){
   
-  out_df_split <- out_df %>% split(.$sce)
+  out_df_split <- rasters_df %>% split(.$sce)
   
   zonal_stats <- lapply(FUN = function(row){
     print(row)
@@ -77,9 +77,9 @@ extract_stats <- function(rasters_df, protected_area_raster,
       mutate(sce = row$sce)
   }, out_df_split)
   
-  all_stats <- bind_rows(zonal_stats)
+  all_stats_ret <- bind_rows(zonal_stats)
   
-  return(all_stats)
+  return(all_stats_ret)
   
 }
 
