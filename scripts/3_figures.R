@@ -6,6 +6,8 @@ library(ggplot2)     # For visualization
 library(ggcorrplot)  # For visualization
 library(ade4)        # For NMDS
 library(vegan)       # For NMDS
+library(dplyr)
+library(tidyr)
 
 # -------------------------------------------------------------------------
 
@@ -17,14 +19,14 @@ all_stats_final <- readRDS("outputs/objects/all_stats_final.rds")
 #   filter(paID %in% mapSubsetA$paID)
 
 all_stats_wide <- all_stats_final %>%
-  select(-c(mean, mean_no_HF)) %>% 
-  pivot_wider(names_from = sce,values_from = ratio) %>% 
-  select(-c(1:7))
+  select(-c(mean, mean_no_HF)) %>%
+  pivot_wider(names_from = sce,values_from = ratio) %>%
+  select(-c(1:5))
 
-all_stats_wide_corrs <- cor(all_stats_wide, 
-                            method="spearman")
-heatmap(all_stats_wide_corrs, symm=TRUE)
-ggcorrplot(all_stats_wide_corrs, hc.order= TRUE)
+# all_stats_wide_corrs <- cor(all_stats_wide, 
+#                             method="spearman")
+# heatmap(all_stats_wide_corrs, symm=TRUE)
+# ggcorrplot(all_stats_wide_corrs, hc.order= TRUE)
 
 
 # -------------------------------------------------------------------------

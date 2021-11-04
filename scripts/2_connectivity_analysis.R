@@ -109,9 +109,10 @@ all_stats_final <- all_stats %>%
   mutate(ratio = mean/mean_no_HF)
 
 too_small <- all_stats_final$paName[is.nan(all_stats_final$ratio)] %>% unique()
+infinite <- all_stats_final$paName[is.infinite(all_stats_final$ratio)] %>% unique()
 
 all_stats_final <- all_stats_final %>% 
-  filter(!(paName %in% too_small))
+  filter(!(paName %in% c(too_small, infinite)))
 
 all_stats_final$ratio
 
