@@ -95,3 +95,14 @@ all_stats_no_HF <- extract_stats(out_df_no_HF, protected_area,
 
 saveRDS(all_stats, "outputs/objects/all_stats.rds")
 saveRDS(all_stats_no_HF, "outputs/objects/all_stats_no_HF.rds")
+
+all_stats_final <- all_stats %>% 
+  left_join(all_stats_no_HF,
+            c("zone", "paID", "paName", "nameEco", "patchArea", "sce"),
+            suffix = c("", "_no_HF")) %>% 
+  mutate(ratio = mean/mean_no_HF)
+all_stats_final$ratio[is.nan(all_stats_final$ratio)] <- 1
+
+all_stats_final$ratio
+
+saveRDS(all_stats_final, "outputs/objects/all_stats_final.rds")
