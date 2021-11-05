@@ -117,3 +117,9 @@ all_stats_final <- all_stats_final %>%
 all_stats_final$ratio
 
 saveRDS(all_stats_final, "outputs/objects/all_stats_final.rds")
+
+# -------------------------------------------------------------------------
+
+all_stats_final_BC <- all_stats_final %>% 
+  filter(paID %in% unique(freq(raster("outputs/tmp/BC_protected_areas.tif"))[,1]))
+saveRDS(all_stats_final_BC, "outputs/objects/all_stats_final_BC.rds")

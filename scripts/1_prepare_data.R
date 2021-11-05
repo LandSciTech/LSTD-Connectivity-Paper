@@ -55,3 +55,24 @@ protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
 # Load PA data
 protected_area_df <- read.csv("data/ProtectedAreas/CanadianPAsLookupSubset.csv")
 protected_area[protected_area <= 10] <- NA
+
+# -------------------------------------------------------------------------
+
+# plot(landscape)
+# BC_extent <- drawExtent()
+
+BC_landscape <- crop(landscape, BC_extent)
+BC_landscape_no_HF <- crop(landscape_no_HF, BC_extent)
+BC_protected_areas <- crop(protected_area, BC_extent)
+
+# BC_pa_IDs <- unique(freq(BC_protected_areas)[,1])
+# 
+# BC_protected_area_df <- protected_area_df %>% 
+#   filter(paID %in% BC_pa_IDs)
+
+writeRaster(BC_landscape, "outputs/tmp/BC_landscape.tif",
+            overwrite = TRUE)
+writeRaster(BC_landscape_no_HF, "outputs/tmp/BC_landscape_no_HF.tif",
+            overwrite = TRUE)
+writeRaster(BC_protected_areas, "outputs/tmp/BC_protected_areas.tif",
+            overwrite = TRUE)
