@@ -96,7 +96,6 @@ all_stats_no_HF <- extract_stats(out_df_no_HF, protected_area,
 saveRDS(all_stats, "outputs/objects/all_stats.rds")
 saveRDS(all_stats_no_HF, "outputs/objects/all_stats_no_HF.rds")
 
-
 # -------------------------------------------------------------------------
 
 all_stats <- readRDS("outputs/objects/all_stats.rds")
