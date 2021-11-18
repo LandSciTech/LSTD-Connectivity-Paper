@@ -121,8 +121,8 @@ for(i in 1:nrow(doPlots)){
     ptm <- proc.time()
     
     trMap = run_connectivity(landscape = exQuality,
-                                        parameters = params, 
-                                        t_df = t_df,out_dir = outDir)
+                             parameters = params, 
+                             t_df = t_df,out_dir = outDir)
     tt = proc.time() - ptm
     doPlots$time[i] = tt[3]
     
@@ -134,7 +134,7 @@ for(i in 1:nrow(doPlots)){
                             t_df = t_df,out_dir = outDir,sourceMap = cPatches)
     kvis = raster(gsub(".tif","_1.tif",kvis$output_map,fixed=T))
     kvis[kvis<=10^-6]=NA
-
+    
     trMap=trMap/cellStats(trMap,"max") #rescale for comparison amongst methods
   }else if (grepl("P",dbit$shape)){
     #parc
@@ -196,7 +196,7 @@ for(i in 1:nrow(doPlots)){
     
     stdP=NULL;gc()
   }
-
+  
   trMap[is.na(paBoundR)]=NA
   trMapH = trMap*exQuality
   
@@ -223,7 +223,7 @@ for(i in 1:nrow(doPlots)){
   plot(paBound,add=T,border="black",axes=FALSE)
   #plot(rasterToContour(kvis),add=T,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
   dev.off()
-
+  
   
   trMap[1,1]=1;trMap[1,2]=0
   trMapH[1,1]=1;trMapH[1,2]=0

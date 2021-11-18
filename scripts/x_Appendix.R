@@ -12,10 +12,10 @@ H <- raster(paste0(inDir,"/newQuality.tif"))/100
 mortality <- (1-H)*(2/30-0.00001)+0.00001
 resistance <- (1-H)*(20-1)+1
 t <- 28
-samc_obj_custom <- samc_cache(resistance = as.matrix(resistance),
-                                           absorbtion = as.matrix(mortality),
-                                           kernel = 8)
-Bh5 <- samc_step(steps = t, cache = samc_obj_custom, population = as.matrix(H*100))
+samc_obj_custom <- samc(data = as.matrix(resistance),
+                        absorption = as.matrix(mortality),
+                        directions = 8)
+Bh5 <- LSTDConnect::distribution(time = t, samc = samc_obj_custom, occ = as.matrix(H*100))
 
 Bh5 <- raster(Bh5$population[[1]], template = H)
 

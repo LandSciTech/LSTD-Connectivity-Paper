@@ -13,21 +13,36 @@ library(tidyr)
 
 all_stats_final <- readRDS("outputs/objects/all_stats_final.rds")
 
-# mapSubsetA <- read.csv("data/mapSetA_exptFullForV.csv")
-# 
+# all_stats_final <- all_stats_final %>% filter(!(nameEco %in% c("HudsonPlains",
+#                                                              "TaigaPlains",
+#                                                              "TaigaCordillera",
+#                                                              "TaigaShield", 
+#                                                              "NorthernArctic",
+#                                                              "SouthernArctic")))
+
+mapSubsetA <- read.csv("data/mapSetA_exptFullForV.csv")
+
 # all_stats_final <- all_stats_final %>%
 #   filter(paID %in% mapSubsetA$paID)
 
 all_stats_wide <- all_stats_final %>%
-  select(-c(mean, mean_no_HF)) %>%
-  pivot_wider(names_from = sce,values_from = ratio) %>%
-  select(-c(1:5))
+  dplyr::select(-c(mean, mean_no_HF)) %>%
+  pivot_wider(names_from = sce,values_from = ratio)
 
 # all_stats_wide_corrs <- cor(all_stats_wide, 
 #                             method="spearman")
 # heatmap(all_stats_wide_corrs, symm=TRUE)
 # ggcorrplot(all_stats_wide_corrs, hc.order= TRUE)
 
+
+all_stats_wide_copy <- all_stats_wide
+all_stats_wide_copy[, 6:40] <- all_stats_wide[,6:40] > 0.99
+all_stats_wide_copy$intact <- rowSums(all_stats_wide_copy[, 6:40]) == 35
+
+to_remove <- all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(paID) %>% unique()
+
+all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(paName) %>% unique()
+all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(nameEco) %>% table()
 
 # -------------------------------------------------------------------------
 
@@ -60,15 +75,15 @@ newcolours <- mycolors[ord]
 
 corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="shade")
 
-
 # -------------------------------------------------------------------------
 
 #normalize data
-fau <- decostand(all_stats_wide, method="normalize", 1)
-fau <- all_stats_wide
+# all_stats_wide <- all_stats_wide %>% 
+#   filter(paID!=6379)
+fau <- decostand(all_stats_wide[,6:40], method="normalize", 1)
 
 #normality assumptions check
-example_NMDS=metaMDS(fau,k=2,trymax=100)
+example_NMDS=metaMDS(fau,k=2,trymax=1000)
 
 #plot
 plot(example_NMDS)
@@ -79,14 +94,14 @@ data_scores = as.data.frame(scores(example_NMDS))
 #add Ecozone name
 data_scores$nameEco = all_stats_wide$nameEco
 
-#add Ecozone acronym
-data_scores$ecoS = all_stats_wide$ecoS
+# #add Ecozone acronym
+# data_scores$ecoS = all_stats_wide$
 
 #add paID
-data_scores$paArea = all_stats_wide$paArea
+data_scores$paArea = all_stats_wide$patchArea
 
 #add columns to data frame
-data_scores = cbind(data_scores,all_stats_wide[,5:53])
+data_scores = cbind(data_scores,all_stats_wide[,6:40])
 head(data_scores)
 
 #plot WITH NO grouping

@@ -5,7 +5,7 @@
 # Prepare inputs ----------------------------------------------------------
 
 scale_raster_bis <- function(to_be_scaled, 
-                        the_min, the_max, old_min=0, old_max=1){
+                             the_min, the_max, old_min=0, old_max=1){
   scaled <- 
     (to_be_scaled - old_min) * (the_max - the_min) / (old_max - old_min) + the_min
   return(scaled)
@@ -165,17 +165,17 @@ run_samc <- function(landscape, parameters, t_df,sourceMap=NULL){
   # Calculate steps
   
   tictoc::tic()
-  samc_obj_custom <- LSTDConnect::samc_cache(resistance = as.matrix(res_raster),
-                                             absorbtion = as.matrix(mort_raster),
-                                             kernel = parameters$dirs)
+  samc_obj_custom <- LSTDConnect::samc(data = as.matrix(res_raster),
+                                       absorption = as.matrix(mort_raster),
+                                       directions = parameters$dirs)
   tictoc::toc() -> clock 
   (clock$toc - clock$tic) -> output_table$cache_elapsed
   
   for(t in t_df$t){
     tictoc::tic()
-    short_disp_custom <- LSTDConnect::samc_step(steps = t, 
-                                                cache = samc_obj_custom, 
-                                                population = as.matrix(occ_raster))
+    short_disp_custom <- LSTDConnect::samc_step(time = t, 
+                                                samc = samc_obj_custom, 
+                                                occ = as.matrix(occ_raster))
     tictoc::toc() -> clock 
     (clock$toc - clock$tic) -> output_table$step_elapsed[output_table$t == t]
     
@@ -221,7 +221,7 @@ run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6,sou
       # Exponential kernel with mean dispersal distance of 1. 
       # Note the tail of the kernel (density < 10^-6) is truncated.
       
-      k <- exponentialKernel(displacement, 
+      k <- exponentialKernel(displacement,
                              negligible = negligible)
       
       tictoc::tic()
@@ -255,7 +255,7 @@ run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6,sou
       
       k <- exponentialKernel(displacement,
                              negligible = negligible)
-
+      
       occ_raster_z <- as.matrix(occ_raster) ^ 0.5
       
       tictoc::tic()
