@@ -165,7 +165,7 @@ run_samc <- function(landscape, parameters, t_df,sourceMap=NULL){
   # Calculate steps
   
   tictoc::tic()
-  samc_obj_custom <- LSTDConnect::samc(data = as.matrix(res_raster),
+  samc_obj_custom <- LSTDConnect::samc(resistance = as.matrix(res_raster),
                                        absorption = as.matrix(mort_raster),
                                        directions = parameters$dirs)
   tictoc::toc() -> clock 

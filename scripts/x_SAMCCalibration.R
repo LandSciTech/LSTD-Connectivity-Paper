@@ -34,7 +34,7 @@ if(runCalibration){
   abs_data <- oneMap;abs_data[abs_data==1]=backgroundMortality #very low background mortality
   
   
-  samc_obj_custom <- LSTDConnect::samc(data = as.matrix(res_data),
+  samc_obj_custom <- LSTDConnect::samc(resistance = as.matrix(res_data),
                                        absorption = as.matrix(abs_data),
                                        directions = 8)
   
