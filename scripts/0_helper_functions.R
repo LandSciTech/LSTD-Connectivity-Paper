@@ -66,7 +66,7 @@ extract_stats <- function(rasters_df, protected_area_raster,
   out_df_split <- rasters_df %>% split(.$sce)
   
   zonal_stats <- lapply(FUN = function(row){
-    print(row)
+    print(row) 
     out_zonal <- zonal(x = raster(row$output_map) %>% 
                          crop(protected_area_raster), # Important to crop
                        z = protected_area_raster, 
@@ -173,13 +173,13 @@ run_samc <- function(landscape, parameters, t_df,sourceMap=NULL){
   
   for(t in t_df$t){
     tictoc::tic()
-    short_disp_custom <- LSTDConnect::samc_step(time = t, 
-                                                samc = samc_obj_custom, 
-                                                occ = as.matrix(occ_raster))
+    short_disp_custom <- LSTDConnect::distribution(time = t, 
+                                                   samc = samc_obj_custom, 
+                                                   occ = as.matrix(occ_raster))
     tictoc::toc() -> clock 
     (clock$toc - clock$tic) -> output_table$step_elapsed[output_table$t == t]
     
-    ( raster(as.matrix(short_disp_custom$population[[1]]), 
+    ( raster(as.matrix(short_disp_custom$occ[[1]]), 
              template = landscape)) |> list() -> 
       output_table$output_map[output_table$t == t]
     gc()
@@ -237,8 +237,7 @@ run_kernel <- function(landscape, parameters, t_df, type, negligible = 10^-6,sou
       
     } else if (type == 'UNIFORM'){
       
-      k <- uniformKernel(displacement, 
-                         useAveDist = TRUE)
+      k <- uniformKernel(displacement)
       
       tictoc::tic()
       trMap <- pfocal(as.matrix(occ_raster), 
