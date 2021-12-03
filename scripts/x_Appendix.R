@@ -41,3 +41,5 @@ I5 <- raster(I5,template=H)
 view = stack(H,Bh5,E5,I5)
 names(view)=c("H","Bh5","E5","I5")
 plot(view)
+
+
