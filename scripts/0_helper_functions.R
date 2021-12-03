@@ -67,14 +67,18 @@ extract_stats <- function(rasters_df, protected_area_raster,
   
   zonal_stats <- lapply(FUN = function(row){
     print(row) 
-    out_zonal <- zonal(x = raster(row$output_map) %>% 
-                         crop(protected_area_raster), # Important to crop
+    cropped <- crop(raster(row$output_map), protected_area_raster)
+    # writeRaster(cropped, "outputs/tmp/tmp.tif", overwrite = TRUE)
+    # cropped <- raster("outputs/tmp/tmp.tif")
+    # browser()
+    out_zonal <- zonal(x = cropped, # Important to crop
                        z = protected_area_raster, 
                        fun = "mean", na.rm = TRUE) %>% 
       as_tibble() %>% 
       mutate(paID = zone) %>% 
       left_join(protected_area_data) %>% 
       mutate(sce = row$sce)
+    # file.remove("outputs/tmp/tmp.tif")
   }, out_df_split)
   
   all_stats_ret <- bind_rows(zonal_stats)

@@ -6,31 +6,36 @@ library(raster)      # For raster casting from matrix values
 
 # -------------------------------------------------------------------------
 
-# gdalwarp -t_srs '+proj=lcc +lat_0=63.390675 +lon_0=-91.8666666666667 +lat_1=49 
-# +lat_2=77 +x_0=6200000 +y_0=3000000 +datum=NAD83 +units=m +no_defs' 
-# ProtectedAreas/paRaster.tif ProtectedAreas/protectedareas_new_landscape.tif 
-# -overwrite
+# gdalwarp -overwrite -tr 300 300 -te 3489899.158 463834.515 9214799.158 5442034.515 
+# -t_srs "+proj=lcc +lat_1=49 +lat_2=77 +lat_0=63.390675 +lon_0=-91.8666666666667 
+# +x_0=6200000 +y_0=3000000 +datum=NAD83 +units=m +no_defs" -r near -co 
+# "COMPRESS=LZW" paRaster.tif paRaster_reproj_300.tif
+
+source("scripts/0_helper_functions.R")
 
 # Load the cost map
-landscape <- raster("data/CanCostMap/costmap_can_mask.tif")
-landscape_no_HF <- raster("data/CanCostMap/costmap_can_noHF.tif")
+landscape <- raster("../data/CombinedCosts/allCostsLayer.tif")
+landscape_no_HF <- raster("../data/CombinedCosts/naturalCostsLayer.tif")
 
 # Load protected area raster
-protected_area <- raster("data/ProtectedAreas/paRaster.tif")
+protected_area <- raster("data/paRaster_reproj_300.tif")
 
 # Reproject the protected area raster
-protected_area <- projectRaster(protected_area, 
-                                crs = raster::crs(landscape), 
-                                res = 1000,
-                                method = "ngb")
-
+# protected_area <- projectRaster(protected_area, 
+#                                 crs = raster::crs(landscape), 
+#                                 res = 300,
+#                                 method = "ngb")
 # Resample the landscape
-landscape <- resample(landscape, protected_area, 
-                      method = "ngb")
-landscape_no_HF <- resample(landscape_no_HF, protected_area, 
-                            method = "ngb")
+# protected_area <- resample(protected_area, landscape,
+#                            method = "ngb")
+# landscape <- resample(landscape, protected_area, 
+#                       method = "ngb")
+# landscape_no_HF <- resample(landscape_no_HF, protected_area, 
+#                             method = "ngb")
 
 # Mask the PA
+# protected_area <- extend(protected_area, landscape)
+# protected_area <- crop(protected_area, landscape)
 protected_area <- mask(protected_area, landscape)
 landscape_no_HF <- mask(landscape_no_HF, landscape)
 
@@ -53,7 +58,7 @@ landscape_no_HF <- raster("outputs/tmp/costmap_can_mask_aggregated_no_HF.tif")
 protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
 
 # Load PA data
-protected_area_df <- read.csv("data/ProtectedAreas/CanadianPAsLookupSubset.csv")
+protected_area_df <- read.csv("data/CanadianPAsLookupSubset.csv")
 protected_area[protected_area <= 10] <- NA
 
 # -------------------------------------------------------------------------
