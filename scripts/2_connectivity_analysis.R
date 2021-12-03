@@ -19,7 +19,7 @@ source('scripts/0_helper_functions.R')
 # for 900 m raster, t <- c(4,28,111,444,1778)
 # for 1000 m raster, t <- c(4,22,90,360,1440)
 
-t <- c(4,22,90,360,1440) # NOTE: t is calibrated for 1km raster
+t <- c(40,250,1000,4001,16007) # NOTE: t is calibrated for 300m raster
 mean_displacement <- c(2, 5, 10, 20, 40)
 
 t_df <- tibble(t = t, 
@@ -85,8 +85,18 @@ saveRDS(out_df_no_HF, "outputs/objects/out_df_no_HF.rds")
 
 # -------------------------------------------------------------------------
 
-out_df <- readRDS("outputs/objects/out_df.rds")
-out_df_no_HF <- readRDS("outputs/objects/out_df_no_HF.rds")
+# out_df <- readRDS("outputs/objects/out_df.rds")
+# out_df_no_HF <- readRDS("outputs/objects/out_df_no_HF.rds")
+
+out_df <- data.frame(output_map = 
+                       list.files(full.names = TRUE, 
+                                  "D:/CAN_COST_LSTD_Connectivity_output_rasters/Can_Cost/")) %>% 
+  mutate(sce = tools::file_path_sans_ext(basename(output_map)))
+
+out_df_no_HF <- data.frame(output_map = 
+                             list.files(full.names = TRUE, 
+                                        "D:/CAN_COST_LSTD_Connectivity_output_rasters/Can_Cost_noH//")) %>% 
+  mutate(sce = stringr::str_replace(tools::file_path_sans_ext(basename(output_map)), "no_HF", ""))
 
 all_stats <- extract_stats(out_df, protected_area, 
                            protected_area_df)

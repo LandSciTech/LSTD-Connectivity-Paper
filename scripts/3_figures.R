@@ -48,6 +48,7 @@ all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(nameEco) %>% table
 
 numClusters <-6
 library(corrplot)
+library(stringr)
 
 # -------------------------------------------------------------------------
 
