@@ -78,6 +78,8 @@ corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="s
 
 # -------------------------------------------------------------------------
 
+library(vegan)
+
 #normalize data
 # all_stats_wide <- all_stats_wide %>% 
 #   filter(paID!=6379)
