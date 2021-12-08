@@ -18,7 +18,7 @@ N = raster(paste0(resultDir,"/naturalCostsLayer.tif"))
 unique(H)
 
 #cropExtent = extent(H, round(0.18*nrow(H)), round(0.83*nrow(H)), round(0.05*ncol(H)), round(0.35*ncol(H))))
-cropExtent = extent(H, round(0.48*nrow(H)), round(0.74*nrow(H)), round(0.06*ncol(H)), round(0.23*ncol(H)))
+cropExtent = extent(H, round(0.48*nrow(H)), round(0.765*nrow(H)), round(0.06*ncol(H)), round(0.23*ncol(H)))
 H <- crop(H, cropExtent)
 N <- crop(N,cropExtent)
 H = 1-H/1000
@@ -30,6 +30,7 @@ provs = provs[is.element(provs@data$NAME_1,c("British Columbia","Alberta")),]
 provs= spTransform(provs,crs(Anthro))
 provs=st_as_sf(provs)
 provsR= fasterize(provs,Anthro)
+plot(provsR)
 
 if(makeMaps){
 
@@ -108,6 +109,7 @@ pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4Maps20std",doStanda
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
 #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5)
 plot(cStack,axes=F,horizontal=T,nr=1)
+plot(provs,add=T)
 dev.off()
 
 
