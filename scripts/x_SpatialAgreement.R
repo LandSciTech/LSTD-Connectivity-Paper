@@ -116,8 +116,10 @@ writeRaster(middle,paste0(resultDir,"/derived/mean",selectTerm,"std",doStandardi
 rm(cc);rm(view)
 removeTmpFiles(h=0.1)
 
+
+
 outSet =   list.files(paste0(resultDir,"/derived"))
-outSet=outSet[grepl("20",outSet,fixed=T)]
+outSet=outSet[grepl(as.character(scale),outSet,fixed=T)]
 sdSet =     outSet[grepl("sd",outSet,fixed=T)&grepl(paste0("std",doStandardization),outSet,fixed=T)]
 meanSet =     outSet[grepl("mean",outSet,fixed=T)&grepl(paste0("std",doStandardization),outSet,fixed=T)]
 
@@ -131,7 +133,7 @@ cStack = stack(H,Anthro,means[[1]],sds[[1]])
 names(cStack)=c("Quality H","Human Footprint","percentile mean","percentile sd")
 
 cStack[is.na(provsR)]=NA
-pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4Maps20std",doStandardization,".pdf"),
+pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4Maps",scale,"std",doStandardization,".pdf"),
     width=11,height=4)
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
 #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5)
