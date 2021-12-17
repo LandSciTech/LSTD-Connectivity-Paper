@@ -1,6 +1,8 @@
 
-AWS Run summary (initially started on the 26 but had to be restarted on
-the 27 due to bug).
+### AWS Run summary
+
+(Initially started on the 26 but had to be restarted on the 27 due to
+bug).
 
 Instance: `m5a-4xlarge`
 
