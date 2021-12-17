@@ -2,8 +2,6 @@
 output: github_document
 ---
 
-### LSTD-Connectivity-Paper
-
 AWS Run summary (initially started on the 26 but had to be restarted on the 27 due to bug).
 
 Instance: `m5a-4xlarge`
