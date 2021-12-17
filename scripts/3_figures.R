@@ -11,7 +11,8 @@ library(tidyr)
 
 # -------------------------------------------------------------------------
 
-all_stats_final <- readRDS("outputs/objects/all_stats_final.rds")
+# all_stats_final <- readRDS("outputs/objects/all_stats_final.rds")
+all_stats_final <- readRDS("outputs/objects/all_stats_final_variant.rds")
 
 # all_stats_final <- all_stats_final %>% filter(!(nameEco %in% c("HudsonPlains",
 #                                                              "TaigaPlains",
