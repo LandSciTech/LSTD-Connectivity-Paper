@@ -3,7 +3,6 @@ library(fasterize)
 library(sf)
 library(rasterVis)
 
-
 #example layer stack
 #source("C:/Users/HughesJo/Documents/gitprojects/LSTD-Connectivity-Paper/scripts/x_Appendix.R")
 
