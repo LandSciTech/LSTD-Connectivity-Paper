@@ -61,6 +61,10 @@ protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
 protected_area_df <- read.csv("data/CanadianPAsLookupSubset.csv")
 protected_area[protected_area <= 10] <- NA
 
+# base_landscape <- raster("../data/CombinedCosts/naturalCostsLayer.tif")
+protected_area[landscape_no_HF==1] <- NA
+# plot(protected_area)
+
 # -------------------------------------------------------------------------
 
 # plot(landscape)

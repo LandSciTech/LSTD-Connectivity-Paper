@@ -340,3 +340,65 @@ encode_parameters <- function(params){
   return(label)
   
 }
+
+
+# Figures -----------------------------------------------------------------
+
+plot_spatial_agreement <- function(scale_param, standardize = TRUE, countryR = "outputs/rasters/countryR.tif",
+                                   output_dir = "outputs/figures/",
+                                   scenarios = NULL,
+                                   resultDir = "D:/CAN_COST_LSTD_Connectivity_output_rasters",
+                                   can_cost_dir = file.path(resultDir, "Can_Cost"), 
+                                   nat_cost_dir = file.path(resultDir, "Can_Cost_noH")){
+
+  # browser()
+  
+  # Adapted from Josie's code, not fully cleaned up
+  stopifnot(scale_param %in% c(2, 5, 10, 20, 40))
+  
+  all_files <- list.files(can_cost_dir)
+  selectTerm <- as.character(scale_param)
+  selectSet <- all_files[grepl(selectTerm, all_files, fixed=T)]
+  
+  if(scale_param == 2){
+    selectSet = selectSet[!grepl("20",selectSet,fixed=T)]
+  }
+  
+  view <- stack(file.path(can_cost_dir, selectSet))
+
+  # TODO this part is costly
+  if(standardize){
+    denom <- stack(file.path(nat_cost_dir,
+                             gsub(".tif", "no_HF.tif", selectSet ,fixed=T)))
+    for(i in 1:nlayers(view)){
+      view[[i]] <- view[[i]] / denom[[i]]
+    }
+    rm(denom)
+  }  
+  
+  # Plot whole landscape
+  names(view) <- gsub(".tif","",selectSet,fixed=T)
+  
+  if (!is.null(scenarios)){
+    plotStack <- subset(view, paste0(scenarios, scale_param))
+    names(plotStack) <- paste0(scenarios, scale_param)
+  } else {
+    plotStack <- view
+    names(plotStack) <- gsub("[[:digit:]]", "", gsub(".tif","",selectSet,fixed=T))
+  }
+  
+  # TODO this line is costly
+  # plotStack <- plotStack*raster(countryR)
+  # countryR <- raster(countryR)
+  # plotStack[is.na(countryR)] <- NA
+  print("ready to plot")
+  
+  pdf(paste0("outputs/figures","/fig5MapsRawBig",selectTerm,"std",standardize,".pdf"))
+  par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+  print(levelplot(plotStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),
+                  maxpixels = 2e5,col.regions=rev(terrain.colors(255))))
+  dev.off()
+  
+  raster::removeTmpFiles(0)
+  return(NULL)
+}
