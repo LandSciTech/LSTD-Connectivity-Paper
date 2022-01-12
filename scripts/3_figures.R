@@ -11,8 +11,8 @@ library(tidyr)
 
 # -------------------------------------------------------------------------
 
-# all_stats_final <- readRDS("outputs/objects/all_stats_final.rds")
-all_stats_final <- readRDS("outputs/objects/all_stats_final_variant.rds")
+ all_stats_final <- readRDS("outputs/objects/all_stats_final.rds")
+#all_stats_final <- readRDS("outputs/objects/all_stats_final_variant.rds")
 
 # all_stats_final <- all_stats_final %>% filter(!(nameEco %in% c("HudsonPlains",
 #                                                              "TaigaPlains",
@@ -47,7 +47,7 @@ all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(nameEco) %>% table
 
 # -------------------------------------------------------------------------
 
-numClusters <-6
+numClusters <-8
 library(corrplot)
 library(stringr)
 
@@ -60,6 +60,8 @@ all_stats_sub <- all_stats_final %>%
   filter(!stringr::str_detect(.data$sce, "NL")) %>% 
   filter(!stringr::str_detect(.data$sce, "C"))
 outMatS = subset(all_stats_sub,select=c(paID,sce,mean))
+
+str(outMatS)
 
 dw <- spread(subset(outMatS,!is.na(mean)), sce, mean)
 cm =cor(subset(dw,select=-paID),method="spearman",use="pairwise.complete.obs")
@@ -76,6 +78,20 @@ ord <- corrMatOrder(cm, order="hclust")
 newcolours <- mycolors[ord]
 
 corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="shade")
+
+pdf("corPlotNums.pdf",width=15,height=15)
+corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="number")
+dev.off()
+
+#subsets
+dist=10
+dist2 = 100
+omit=20
+omitBH ="BH2"
+dws <- spread(subset(outMatS,!is.na(mean)&(grepl(dist,sce)|grepl(dist2,sce))&!grepl(omit,sce)&!grepl(omitBH,sce)), sce, mean)
+str(dws)
+cs =cor(subset(dws,select=-paID),method="spearman",use="pairwise.complete.obs")
+min(cs)
 
 # -------------------------------------------------------------------------
 
