@@ -25,7 +25,7 @@ writeRaster(countryR, "outputs/rasters/countryR.tif")
 layerSet = list.files(paste0(resultDir,"/Can_Cost"))
 
 doStandardization=F
-the_scale = 20
+the_scale = 40
 selectTerm = as.character(the_scale)
 selectSet = layerSet[grepl(selectTerm,layerSet,fixed=T)]
 
@@ -34,6 +34,7 @@ if(the_scale==2){
 }
 
 view = stack(paste0(resultDir,"/Can_Cost/",selectSet))
+plot(view[[3]])
 
 if(doStandardization){
   denom = stack(paste0(resultDir,"/Can_Cost_noH/",gsub(".tif","no_HF.tif",selectSet,fixed=T)))
