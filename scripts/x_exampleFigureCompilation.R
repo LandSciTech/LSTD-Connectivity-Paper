@@ -4,6 +4,8 @@ library(RColorBrewer)
 library(imager)
 library(tidyverse)
 
+pal = 'RdYlBu'
+
 #baseDir = "./output/KernelVisualizationsOut"
 baseDir = "C:/Users/HughesJo/Documents/InitialWork/Connectivity/ConnectivityMetricsForMonitoring/IALEiposter/KernelVisualizations"
 
@@ -41,7 +43,7 @@ for(i in 1:nrow(doSet)){
   #dev.print(png,paste0(outDir,"/mapSamples",m,".png"), width=400, height=400)
   png(paste0(outDir,"/components/mapSamples",m,".png"), width=400, height=400)
   par(mai=c(0,0,0,0),mar=c(0,0,0,0),oma=c(0,0,0,0),omi=c(0,0,0,0))
-  plot(exQualityP,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
+  plot(exQualityP,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA,col=hcl.colors(255,palette="Reds"))
   plot(kvis,col=brewer.pal(n=9, name = "Blues"),add=T,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
   #plot(paBound,add=T,border="black",axes=FALSE)
   #plot(rasterToContour(kvis),add=T,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
@@ -62,7 +64,7 @@ for(i in 1:nrow(doSet)){
 #pdf(paste0(outDir,"/legendQuality.pdf"), width=1.5, height=1.5)
 png(paste0(outDir,"/legendQuality.png"), width=2, height=1,units="in",res=300)
 par(mai=c(0,0,0,0),mar=c(0,0,0,0),oma=c(0,0,0,0),omi=c(0,0,0,0))
-plot(exQualityP,legend.only=TRUE,horizontal = TRUE,legend.args = list(text='Quality'))
+plot(exQualityP,legend.only=TRUE,horizontal = TRUE,legend.args = list(text='Quality'),col=hcl.colors(255,palette="Reds"))
 dev.off()
 
 png(paste0(outDir,"/legendKernel.png"), width=2, height=1,units="in",res=300)
@@ -158,7 +160,7 @@ for(i in 1:nrow(doSet)){
   #dev.new(height=nrow(exQuality), width=nrow(exQuality))
   png(paste0(outDir,"/components/Gamma",m,".png"), width=282*1.3, height=290*1.3)
   par(mai=c(0,0,0,0),mar=c(0,0,0,0),oma=c(0,0,0,0),omi=c(0,0,0,0))
-  plot(trMap,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
+  plot(trMap,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA,col=hcl.colors(255,palette=pal))
   plot(paBound,add=T,border="black",axes=FALSE)
   #dev.print(png,paste0(outDir,"/Gamma",m,".png"), width=400, height=400)
   dev.off()
@@ -178,7 +180,7 @@ for(i in 1:nrow(doSet)){
 
 png(paste0(outDir,"/legendMetric.png"), width=2, height=1,units="in",res=300)
 par(mai=c(0,0,0,0),mar=c(0,0,0,0),oma=c(0,0,0,0),omi=c(0,0,0,0))
-plot(trMap,legend.only=TRUE,horizontal = TRUE,legend.args = list(text='Metric Value'))
+plot(trMap,legend.only=TRUE,horizontal = TRUE,legend.args = list(text='Metric Value'),col=hcl.colors(255,palette=pal))
 dev.off()
 
 theme_set(theme_bw())

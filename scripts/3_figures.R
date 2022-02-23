@@ -37,13 +37,15 @@ all_stats_wide <- all_stats_final %>%
 
 
 all_stats_wide_copy <- all_stats_wide
-all_stats_wide_copy[, 6:40] <- all_stats_wide[,6:40] > 0.99
-all_stats_wide_copy$intact <- rowSums(all_stats_wide_copy[, 6:40]) == 35
+#all_stats_wide_copy[, 6:40] <- all_stats_wide[,6:40] > 0.99
+#all_stats_wide_copy$intact <- rowSums(all_stats_wide_copy[, 6:40]) == 35
 
-to_remove <- all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(paID) %>% unique()
+#to_remove <- all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(paID) %>% unique()
 
-all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(paName) %>% unique()
-all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(nameEco) %>% table()
+#all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(paName) %>% unique()
+#all_stats_wide_copy[all_stats_wide_copy$intact ==1,] %>% pull(nameEco) %>% table()
+
+str(all_stats_wide_copy)
 
 # -------------------------------------------------------------------------
 
@@ -59,39 +61,44 @@ all_stats_sub <- all_stats_final %>%
   #filter(!stringr::str_detect(.data$sce, "MH")) %>% 
   filter(!stringr::str_detect(.data$sce, "NL")) %>% 
   filter(!stringr::str_detect(.data$sce, "C"))
-outMatS = subset(all_stats_sub,select=c(paID,sce,mean))
+outMatS = subset(all_stats_sub,select=c(paID,sce,mean,nameEco))
 
 str(outMatS)
 
-dw <- spread(subset(outMatS,!is.na(mean)), sce, mean)
-cm =cor(subset(dw,select=-paID),method="spearman",use="pairwise.complete.obs")
+ecoSets = setdiff(c("all",unique(outMatS$nameEco)),c(NA))
 
-mycolors <- rep(NA,length(rownames(cm)))
-names(mycolors) <- rownames(cm)
-mycolors[grepl(2,names(mycolors))]   <- grey(0)
-mycolors[grepl(5,names(mycolors))]   <- grey(0.2)
-mycolors[grepl(10,names(mycolors))]   <- grey(0.4)
-mycolors[grepl(20,names(mycolors))]   <- grey(0.6)
-mycolors[grepl(40,names(mycolors))]   <- grey(0.8)
 
-ord <- corrMatOrder(cm, order="hclust")
-newcolours <- mycolors[ord]
+for (ec in ecoSets){
+  #ec="NorthernArctic"
+  if(ec=="all"){
+    dw <- spread(subset(outMatS,!is.na(mean),select=-nameEco), sce, mean)
+  }else{
+    dw <- spread(subset(outMatS,!is.na(mean)&(nameEco==ec),select=-nameEco), sce, mean)
+  }
+  cm =cor(subset(dw,select=-paID),method="spearman",use="pairwise.complete.obs")
+  
+  mycolors <- rep(NA,length(rownames(cm)))
+  names(mycolors) <- rownames(cm)
+  mycolors[grepl(2,names(mycolors))]   <- grey(0)
+  mycolors[grepl(5,names(mycolors))]   <- grey(0.2)
+  mycolors[grepl(10,names(mycolors))]   <- grey(0.4)
+  mycolors[grepl(20,names(mycolors))]   <- grey(0.6)
+  mycolors[grepl(40,names(mycolors))]   <- grey(0.8)
+  
+  ord <- corrMatOrder(cm, order="hclust")
+  newcolours <- mycolors[ord]
+  
+  pdf(paste0("outputs/figures/corPlotShade",ec,".pdf"),width=9,height=9)
+  print(corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="shade",
+           is.corr=FALSE, col=hcl.colors(255,palette=pal)))
+  dev.off()
+  
+  pdf(paste0("outputs/figures/corPlotNums",ec,".pdf"),width=15,height=15)
+  print(corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="number"))
+  dev.off()
+  
+}
 
-corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="shade")
-
-pdf("corPlotNums.pdf",width=15,height=15)
-corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="number")
-dev.off()
-
-#subsets
-dist=10
-dist2 = 100
-omit=20
-omitBH ="BH2"
-dws <- spread(subset(outMatS,!is.na(mean)&(grepl(dist,sce)|grepl(dist2,sce))&!grepl(omit,sce)&!grepl(omitBH,sce)), sce, mean)
-str(dws)
-cs =cor(subset(dws,select=-paID),method="spearman",use="pairwise.complete.obs")
-min(cs)
 
 # -------------------------------------------------------------------------
 

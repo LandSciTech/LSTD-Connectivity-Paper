@@ -3,11 +3,12 @@ library(fasterize)
 library(sf)
 library(rasterVis)
 
+pal = 'RdYlBu'
 #example layer stack
 #source("C:/Users/HughesJo/Documents/gitprojects/LSTD-Connectivity-Paper/scripts/x_Appendix.R")
 
 # -------------------------------------------------------------------------
-
+doBigPlots = F
  resultDir = "C:/Users/HughesJo/Documents/gitprojects/LSTD-Connectivity-Paper/outputs/rasters"
 #resultDir = "D:/CAN_COST_LSTD_Connectivity_output_rasters/"
 
@@ -16,16 +17,35 @@ library(rasterVis)
 #H <- raster("../data/CombinedCosts/allCostsLayer.tif")
 #N <- raster("../data/CombinedCosts/naturalCostsLayer.tif")
 
-provs =  getData('GADM', country='CAN', level=1)
-provs= spTransform(provs,crs(H))
-countryR = fasterize(st_as_sf(provs),H)
-writeRaster(countryR, "outputs/rasters/countryR.tif")
+provsA =  getData('GADM', country='CAN', level=1)
+provsA= spTransform(provsA,crs(H))
+countryR = fasterize(st_as_sf(provsA),H)
+writeRaster(countryR, "outputs/rasters/countryR.tif",overwrite=T)
+
+zones = st_read("C:/Users/HughesJo/Documents/gitprojects/LSTD-Connectivity-Paper/data/Ecozones")
+zones = st_transform(zones,crs(H))
+
+if(doBigPlots){
+  plotStack = stack(H,N)
+  names(plotStack)= c("with human footprint","without human footprint")
+  plotStack[[1]] = plotStack[[1]]*countryR
+  plotStack[[2]] = plotStack[[2]]*countryR
+  plotStack = 1-plotStack/1000
+  pdf(paste0("outputs/figures","/fig1BigQuality.pdf"),
+      width=6*1.5,height=4*1.3)
+  par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+  levelplot(plotStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette="Reds"))
+  #plot(plotStack,axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette="Reds"))
+  dev.off()
+  rm(plotStack)
+}  
 # unique(H)
 
 layerSet = list.files(paste0(resultDir,"/Can_Cost"))
 
-doStandardization=F
-the_scale = 40
+doSDs = F
+doStandardization=T
+the_scale = 20
 selectTerm = as.character(the_scale)
 selectSet = layerSet[grepl(selectTerm,layerSet,fixed=T)]
 
@@ -59,22 +79,32 @@ names(plotStack)= paste0(selectNs,the_scale)
 pdf(paste0("outputs/figures","/fig5MapsRawBig",selectTerm,"std",doStandardization,".pdf"),
     width=8,height=5)
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-levelplot(plotStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=rev(terrain.colors(255)))
+levelplot(plotStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
 dev.off()
 rm(plotStack)
 
 
-#cropExtent = extent(H, round(0.18*nrow(H)), round(0.83*nrow(H)), round(0.05*ncol(H)), round(0.35*ncol(H))))
-cropExtent = extent(H, round(0.48*nrow(H)), round(0.765*nrow(H)), round(0.06*ncol(H)), round(0.23*ncol(H)))
+H = raster(paste0(resultDir,"/allCostsLayer.tif"))
+N = raster(paste0(resultDir,"/naturalCostsLayer.tif"))
+
+#cropExtent = extent(H, round(0.4135*nrow(H)), round(0.765*nrow(H)), round(0.06*ncol(H)), round(0.23*ncol(H)))
+cropExtent = extent(H, round(0.4135*nrow(H)), round(0.764*nrow(H)), round(0.035*ncol(H)), round(0.305*ncol(H)))
+
 H <- crop(H, cropExtent)
 N <- crop(N, cropExtent)
 H = 1-H/1000
 N = 1-N/1000
 Anthro = (1-H)-(1-N)
 
-provs = provs[is.element(provs@data$NAME_1,c("British Columbia","Alberta")),]
-provsR= fasterize(st_as_sf(provs),Anthro)
-# plot(provsR)
+provs = provsA[is.element(provsA@data$NAME_1,c("British Columbia","Alberta")),]
+provs = st_union(st_as_sf(provs))
+provsR= fasterize(st_as_sf(provs),H)
+plot(provsR)
+plot(provs,add=T)
+
+unique(zones$ZONE_ID)
+zonesS = st_intersection(zones,provs)
+zonesR = fasterize(zones,Anthro,field="ZONE_ID",fun="max")
 
 # -------------------------------------------------------------------------
 if(0){
@@ -104,8 +134,8 @@ plotStack = subset(view,paste0(selectNs,the_scale))
 pdf(paste0("outputs/figures","/fig5MapsRaw",selectTerm,"std",doStandardization,".pdf"),
     width=8,height=3)
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-levelplot(plotStack,xlab=NULL,ylab="unscaled metric values",scales=list(draw=FALSE),
-          maxpixels = 2e5,col.regions=rev(terrain.colors(255)))
+levelplot(plotStack,xlab=NULL,ylab="raw metric values",scales=list(draw=FALSE),
+          maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
 #plot(plotStack,axes=F,horizontal=T,nr=1)
 dev.off()
 rm(plotStack)
@@ -123,52 +153,85 @@ for(j in 1:nrow(qTab)){
 names(cc)=gsub(".tif","",selectSet,fixed=T)
 
 plotStack = subset(cc,paste0(selectNs,the_scale))
+plotStack[]
 pdf(paste0("outputs/figures","/fig5Maps",selectTerm,"std",doStandardization,".pdf"),
     width=8,height=3)
 if(doStandardization){
-  xlab = "percentiles scaled"
+  xlab = "ratio percentiles"
 }else{
-  xlab="percentiles unscaled"
+  xlab="raw percentiles"
 }
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
 levelplot(plotStack,ylab=xlab,xlab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,
-          col.regions=rev(terrain.colors(255)))
+          col.regions=hcl.colors(255,palette=pal))
 #plot(plotStack,axes=F,horizontal=T,nr=1)
 dev.off()
 
-# -------------------------------------------------------------------------
-var = calc(cc, sd)
-# writeRaster(var,paste0(resultDir,"/derived/sd",selectTerm,"std",doStandardization,".tif"),overwrite=T)
 
-middle = calc(cc,mean)
-# writeRaster(middle,paste0(resultDir,"/derived/mean",selectTerm,"std",doStandardization,".tif"),overwrite=T)
-rm(cc);rm(view)
-removeTmpFiles(h=0.1)
-
-# -------------------------------------------------------------------------
-
-outSet =   list.files(paste0(resultDir,"/derived"))
-outSet=outSet[grepl(as.character(the_scale),outSet,fixed=T)]
-sdSet =     outSet[grepl("sd",outSet,fixed=T)&grepl(paste0("std",doStandardization),outSet,fixed=T)]
-meanSet =     outSet[grepl("mean",outSet,fixed=T)&grepl(paste0("std",doStandardization),outSet,fixed=T)]
-
-sds = stack(paste0(resultDir,"/derived/",sdSet))
-names(sds)=sdSet
-
-means = stack(paste0(resultDir,"/derived/",meanSet))
-names(means)=meanSet
-
-cStack = stack(H,Anthro,means[[1]],sds[[1]])
-names(cStack)=c("Quality H","Human Footprint","percentile mean","percentile sd")
-
-cStack[is.na(provsR)]=NA
-pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4Maps",the_scale,"std",doStandardization,".pdf"),
-    width=11,height=4)
-par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-#levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5)
-plot(cStack,axes=F,horizontal=T,nr=1)
-dev.off()
-
+if(doSDs){
+  # -------------------------------------------------------------------------
+  var = calc(cc, sd)
+  writeRaster(var,paste0(resultDir,"/derived/sd",selectTerm,"std",doStandardization,".tif"),overwrite=T)
+  
+  middle = calc(cc,mean)
+  writeRaster(middle,paste0(resultDir,"/derived/mean",selectTerm,"std",doStandardization,".tif"),overwrite=T)
+  rm(cc);rm(view)
+  removeTmpFiles(h=0.1)
+  
+  # -------------------------------------------------------------------------
+  
+  outSet =   list.files(paste0(resultDir,"/derived"))
+  outSet=outSet[grepl(as.character(the_scale),outSet,fixed=T)]
+  sdSet =     outSet[grepl("sd",outSet,fixed=T)&grepl(paste0("std",doStandardization),outSet,fixed=T)]
+  meanSet =     outSet[grepl("mean",outSet,fixed=T)&grepl(paste0("std",doStandardization),outSet,fixed=T)]
+  
+  sds = stack(paste0(resultDir,"/derived/",sdSet))
+  names(sds)=sdSet
+  plot(sds,col=rev(hcl.colors(255,palette="RdYlBu")))
+  plot(st_geometry(zonesS),add=T)
+  
+  hcl.pals()
+  means = stack(paste0(resultDir,"/derived/",meanSet))
+  names(means)=meanSet
+  
+  cStack = stack(H,Anthro,means[[1]],sds[[1]])
+  names(cStack)=c("Quality","Human Footprint","mean","sd")
+  cStack[is.na(provsR)]=NA
+  
+  size = 4
+  widthS = 0.9
+  pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4sd",the_scale,"std",doStandardization,".pdf"),
+      width=size*widthS,height=size)
+  par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+  #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
+  plot(sds[[1]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette=pal)))
+  plot(st_geometry(zonesS),add=T)
+  dev.off()
+  
+  pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4sd",the_scale,"mean",doStandardization,".pdf"),
+      width=size*widthS,height=size)
+  par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+  #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
+  plot(means[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette=pal))
+  plot(st_geometry(zonesS),add=T)
+  dev.off()
+  
+  pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4quality",the_scale,"mean",doStandardization,".pdf"),
+      width=size*widthS,height=size)
+  par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+  #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
+  plot(cStack[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette="Reds"))
+  plot(st_geometry(zonesS),add=T)
+  dev.off()
+  
+  pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4footprint",the_scale,"mean",doStandardization,".pdf"),
+      width=size*widthS,height=size)
+  par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+  #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
+  plot(cStack[[2]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette="Reds")))
+  plot(st_geometry(zonesS),add=T)
+  dev.off()
+}
 removeTmpFiles(h=0.1)
 
 # -------------------------------------------------------------------------

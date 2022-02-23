@@ -7,9 +7,10 @@ library(LSTDConnect)
 library(pfocal)      # For focal test calculations
 library(tictoc)      # For benchmarking
 
+pal = 'RdYlBu'
+
 # Source functions
 source('scripts/0_helper_functions.R')
-
 
 baseDir = "C:/Users/HughesJo/Documents/InitialWork/Connectivity/ConnectivityMetricsForMonitoring/IALEiposter/KernelVisualizations"
 outDir = baseDir
