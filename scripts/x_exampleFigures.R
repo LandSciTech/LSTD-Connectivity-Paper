@@ -3,7 +3,7 @@ library(plot.matrix)
 library(RColorBrewer)
 library(imager)
 library(tidyverse)
-library(LSTDConnect)
+library(LSTDConnect) #Note: install from "parc" branch to enable parc calculations.
 library(pfocal)      # For focal test calculations
 library(tictoc)      # For benchmarking
 
@@ -12,10 +12,8 @@ pal = 'RdYlBu'
 # Source functions
 source('scripts/0_helper_functions.R')
 
-baseDir = "C:/Users/HughesJo/Documents/InitialWork/Connectivity/ConnectivityMetricsForMonitoring/IALEiposter/KernelVisualizations"
-outDir = baseDir
-paID =4025
-inDir = paste0(baseDir,"/pa",paID)#"/pa4025")
+outDir = "outputs/KernelVisualizations"
+inDir = "data/pa4025"
 
 #Example landcover map
 exQuality=raster(paste0(inDir,"/newQuality.tif"))
@@ -168,16 +166,10 @@ for(i in 1:nrow(doPlots)){
     w_jd = data.frame(id=as.numeric(dimnames(ww_ij)[[2]]),w=ww_ij[1,])
     w_jd=merge(data.frame(id=1:ncell(exQuality)),w_jd,all.x=T)
     kvis = exQuality;kvis[!is.na(kvis)]=NA;kvis[]=w_jd$w
-    #plot(kvis)
-    
+
     w_jd=NULL; stdP=NULL;testPC=NULL; samc_obj=NULL; d_ij=NULL; ww_ij=NULL; gc()
     
-    #    sort( sapply(ls(),function(x){object.size(get(x))}))
-    
-    #plot(exQualityP,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
-    #plot(kvis,col=brewer.pal(n=9, name = "Blues"),add=T,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
     paBoundR[is.na(paBoundR)]=0
-    #plot(paBoundR)
     cellStats(paBoundR,"sum")
     
     ptm <- proc.time()
@@ -186,11 +178,9 @@ for(i in 1:nrow(doPlots)){
     doPlots$time[i] = tt[3]
     
     M_i=testPC@M_i;testPC=NULL
-    #    plot(testPC@M_i)
-    
+
     stdP = parcConnectedness(x=stack(paBoundR,oneMap,oneMap),maxDist=maxDistHold*res(cPatches)[1],alpha=2/(dbar*1000),memoryLimit=0,stopOnMemoryLimit=T)
     
-    #    plot(stdP@M_i)
     paBoundR[paBoundR==0]=NA
     
     trMap = M_i/stdP@M_i
@@ -214,33 +204,27 @@ for(i in 1:nrow(doPlots)){
   writeRaster(trMap,paste(paste0(outDir,"/components/Gamma",m,".tif")),overwrite=T)
   writeRaster(trMapH,paste(paste0(outDir,"/components/R",m,".tif")),overwrite=T)
   
-  #dev.new(height=nrow(exQuality), width=nrow(exQuality))
-  #dev.print(png,paste0(outDir,"/mapSamples",m,".png"), width=400, height=400)
   png(paste0(outDir,"/components/mapSamples",m,".png"), width=400, height=400)
   par(mai=c(0,0,0,0),mar=c(0,0,0,0),oma=c(0,0,0,0),omi=c(0,0,0,0))
   
   plot(exQualityP,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
   plot(kvis,col=brewer.pal(n=9, name = "Blues"),add=T,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
   plot(paBound,add=T,border="black",axes=FALSE)
-  #plot(rasterToContour(kvis),add=T,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
   dev.off()
   
   
   trMap[1,1]=1;trMap[1,2]=0
   trMapH[1,1]=1;trMapH[1,2]=0
   
-  #dev.new(height=nrow(exQuality), width=nrow(exQuality))
   png(paste0(outDir,"/components/Gamma",m,".png"), width=400, height=400)
   
   par(mai=c(0,0,0,0),mar=c(0,0,0,0),oma=c(0,0,0,0),omi=c(0,0,0,0))
   plot(trMap,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
   plot(paBound,add=T,border="black",axes=FALSE)
-  #dev.print(png,paste0(outDir,"/Gamma",m,".png"), width=400, height=400)
   dev.off()
   
   
   png(paste0(outDir,"/components/R",m,".png"), width=400, height=400)
-  #dev.new(height=nrow(exQuality), width=nrow(exQuality))
   par(mai=c(0,0,0,0),mar=c(0,0,0,0),oma=c(0,0,0,0),omi=c(0,0,0,0))
   plot(trMapH,axes=FALSE,box=FALSE,legend=FALSE, frame=FALSE, asp = "", xpd = NA)
   plot(paBound,add=T,border="black",axes=FALSE)

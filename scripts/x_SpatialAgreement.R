@@ -4,25 +4,21 @@ library(sf)
 library(rasterVis)
 
 pal = 'RdYlBu'
-#example layer stack
-#source("C:/Users/HughesJo/Documents/gitprojects/LSTD-Connectivity-Paper/scripts/x_Appendix.R")
 
 # -------------------------------------------------------------------------
 doBigPlots = F
- resultDir = "C:/Users/HughesJo/Documents/gitprojects/LSTD-Connectivity-Paper/outputs/rasters"
-#resultDir = "D:/CAN_COST_LSTD_Connectivity_output_rasters/"
+ resultDir = "./outputs/rasters"
 
  H = raster(paste0(resultDir,"/allCostsLayer.tif"))
  N = raster(paste0(resultDir,"/naturalCostsLayer.tif"))
-#H <- raster("../data/CombinedCosts/allCostsLayer.tif")
-#N <- raster("../data/CombinedCosts/naturalCostsLayer.tif")
 
 provsA =  getData('GADM', country='CAN', level=1)
 provsA= spTransform(provsA,crs(H))
 countryR = fasterize(st_as_sf(provsA),H)
 writeRaster(countryR, "outputs/rasters/countryR.tif",overwrite=T)
 
-zones = st_read("C:/Users/HughesJo/Documents/gitprojects/LSTD-Connectivity-Paper/data/Ecozones")
+#NOTE: ecozone shape file available for download here https://sis.agr.gc.ca/cansis/nsdb/ecostrat/gis_data.html
+zones = st_read("./data/Ecozones")
 zones = st_transform(zones,crs(H))
 
 if(doBigPlots){
@@ -35,11 +31,9 @@ if(doBigPlots){
       width=6*1.5,height=4*1.3)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
   levelplot(plotStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette="Reds"))
-  #plot(plotStack,axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette="Reds"))
   dev.off()
   rm(plotStack)
 }  
-# unique(H)
 
 layerSet = list.files(paste0(resultDir,"/Can_Cost"))
 
@@ -106,25 +100,9 @@ unique(zones$ZONE_ID)
 zonesS = st_intersection(zones,provs)
 zonesR = fasterize(zones,Anthro,field="ZONE_ID",fun="max")
 
-# -------------------------------------------------------------------------
-if(0){
-scale_vector <- c(2, 40) # 5, 10, 20,
-removeTmpFiles(0)
-for (s in scale_vector){
-  plot_spatial_agreement(s, standardize = F, scenarios = c("I","ML","MH"))
-  removeTmpFiles(0)
-}
-for (s in scale_vector){
-  plot_spatial_agreement(s, standardize = T, scenarios = c("I","ML","MH"))
-  removeTmpFiles(0)
-}
-}
-# -------------------------------------------------------------------------
-
 view <- crop(view, cropExtent)
 
 view[is.na(provsR)]=NA
-#view[N==0]=NA # only look at agreement/disagreement for places that aren't rock and ice
 
 names(view)=gsub(".tif","",selectSet,fixed=T)
 
@@ -136,7 +114,6 @@ pdf(paste0("outputs/figures","/fig5MapsRaw",selectTerm,"std",doStandardization,"
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
 levelplot(plotStack,xlab=NULL,ylab="raw metric values",scales=list(draw=FALSE),
           maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
-#plot(plotStack,axes=F,horizontal=T,nr=1)
 dev.off()
 rm(plotStack)
 
@@ -164,7 +141,6 @@ if(doStandardization){
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
 levelplot(plotStack,ylab=xlab,xlab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,
           col.regions=hcl.colors(255,palette=pal))
-#plot(plotStack,axes=F,horizontal=T,nr=1)
 dev.off()
 
 
@@ -203,7 +179,6 @@ if(doSDs){
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4sd",the_scale,"std",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
   plot(sds[[1]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette=pal)))
   plot(st_geometry(zonesS),add=T)
   dev.off()
@@ -211,7 +186,6 @@ if(doSDs){
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4sd",the_scale,"mean",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
   plot(means[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette=pal))
   plot(st_geometry(zonesS),add=T)
   dev.off()
@@ -219,7 +193,6 @@ if(doSDs){
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4quality",the_scale,"mean",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
   plot(cStack[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette="Reds"))
   plot(st_geometry(zonesS),add=T)
   dev.off()
@@ -227,7 +200,6 @@ if(doSDs){
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4footprint",the_scale,"mean",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  #levelplot(cStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
   plot(cStack[[2]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette="Reds")))
   plot(st_geometry(zonesS),add=T)
   dev.off()
