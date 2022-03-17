@@ -67,7 +67,7 @@ str(outMatS)
 
 ecoSets = setdiff(c("all",unique(outMatS$nameEco)),c(NA))
 
-
+pal = 'RdYlBu'
 for (ec in ecoSets){
   #ec="NorthernArctic"
   if(ec=="all"){
