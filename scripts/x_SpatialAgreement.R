@@ -1,7 +1,12 @@
 library(raster)
 library(fasterize)
 library(sf)
+library(sp)
+library(latticeExtra)
 library(rasterVis)
+library(terra)
+library(ggplot2)
+library(pals)
 
 pal = 'RdYlBu'
 
@@ -22,16 +27,43 @@ zones = st_read("./data/Ecozones")
 zones = st_transform(zones,crs(H))
 
 if(doBigPlots){
-  plotStack = stack(H,N)
-  names(plotStack)= c("with human footprint","without human footprint")
-  plotStack[[1]] = plotStack[[1]]*countryR
-  plotStack[[2]] = plotStack[[2]]*countryR
+  plotStack = c(rast(H),rast(N))
+  names(plotStack)= c("a) with human footprint","b) without human footprint")
+  plotStack[[1]] = plotStack[[1]]*rast(countryR)
+  plotStack[[2]] = plotStack[[2]]*rast(countryR)
   plotStack = 1-plotStack/1000
-  pdf(paste0("outputs/figures","/fig1BigQuality.pdf"),
-      width=6*1.5,height=4*1.3)
+  values(plotStack[[1]])<- round(values(plotStack[[1]]),2)
+  values(plotStack[[2]])<- round(values(plotStack[[2]]),2)
+  
+  pdf(paste0("outputs/figures","/fig1BigQuality1.pdf"),
+      width=9,height=5)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  levelplot(plotStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette="Reds"))
+  plot(plotStack[[1]],axes=F,main=names(plotStack)[[1]])
+  north(xy="topright")
+  sbar(d=1000*1000,xy="right",type="bar",label=c(0,500,1000),below="km")
   dev.off()
+  
+  pdf(paste0("outputs/figures","/fig1BigQuality2.pdf"),
+      width=9,height=5)
+  par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+  plot(plotStack[[2]],axes=F,main=names(plotStack)[[2]])
+  north(xy="topright")
+  sbar(d=1000*1000,xy="right",type="bar",label=c(0,500,1000),below="km")
+  dev.off()
+  
+  
+  
+  pdf(paste0("outputs/figures","/fig1Zones.pdf"),
+      width=9,height=5)
+  par(mar=c(0,0,0,0), oma=c(0,0,0,0))
+  zp = st_as_sf(zones)
+  zp$Ecozone =as.factor(zp$ZONE_NAME)
+  base = ggplot() + geom_sf(data = zp, aes(fill = Ecozone))+
+    scale_fill_discrete(type=stepped3(15))
+  plot(base)
+    
+  dev.off()
+  
   rm(plotStack)
 }  
 

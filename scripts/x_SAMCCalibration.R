@@ -54,6 +54,9 @@ if(runCalibration){
     
     short_disp_map <- raster(as.matrix(short_disp_custom$population[[1]]),
                              template = cPatches)
+
+    deaths <- raster(as.matrix(short_disp_custom$population[[1]]),
+                             template = cPatches)
     
     #calculate mean displacement
     cp=cPatches;cp[cp==0]=NA;cp =rasterToPoints(cp);cp=cp[,1:2]
@@ -63,6 +66,7 @@ if(runCalibration){
                 template = cPatches)
     
     tSet$meanDisplacement[i] = cellStats(dd*short_disp_map/cellStats(short_disp_map,"sum"),"sum")
+    tSet$survival = 
   }
   
   tSet
