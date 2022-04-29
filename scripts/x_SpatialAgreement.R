@@ -8,7 +8,7 @@ library(terra)
 library(ggplot2)
 library(pals)
 
-pal = 'RdYlBu'
+cpal = 'RdYlBu'
 
 # -------------------------------------------------------------------------
 doBigPlots = F
@@ -38,7 +38,7 @@ if(doBigPlots){
   pdf(paste0("outputs/figures","/fig1BigQuality1.pdf"),
       width=9,height=5)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  plot(plotStack[[1]],axes=F,main=names(plotStack)[[1]])
+  plot(plotStack[[1]],axes=F,main=names(plotStack)[[1]],col=hcl.colors(100,palette=cpal))
   north(xy="topright")
   sbar(d=1000*1000,xy="right",type="bar",label=c(0,500,1000),below="km")
   dev.off()
@@ -46,7 +46,7 @@ if(doBigPlots){
   pdf(paste0("outputs/figures","/fig1BigQuality2.pdf"),
       width=9,height=5)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  plot(plotStack[[2]],axes=F,main=names(plotStack)[[2]])
+  plot(plotStack[[2]],axes=F,main=names(plotStack)[[2]],col=hcl.colors(100,palette=cpal))
   north(xy="topright")
   sbar(d=1000*1000,xy="right",type="bar",label=c(0,500,1000),below="km")
   dev.off()
@@ -105,7 +105,7 @@ names(plotStack)= paste0(selectNs,the_scale)
 pdf(paste0("outputs/figures","/fig5MapsRawBig",selectTerm,"std",doStandardization,".pdf"),
     width=8,height=5)
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-levelplot(plotStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
+levelplot(plotStack,xlab=NULL,ylab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,col.regions=hcl.colors(255,palette=cpal))
 dev.off()
 rm(plotStack)
 
@@ -145,7 +145,7 @@ pdf(paste0("outputs/figures","/fig5MapsRaw",selectTerm,"std",doStandardization,"
     width=8,height=3)
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
 levelplot(plotStack,xlab=NULL,ylab="raw metric values",scales=list(draw=FALSE),
-          maxpixels = 2e5,col.regions=hcl.colors(255,palette=pal))
+          maxpixels = 2e5,col.regions=hcl.colors(255,palette=cpal))
 dev.off()
 rm(plotStack)
 
@@ -172,7 +172,7 @@ if(doStandardization){
 }
 par(mar=c(0,0,0,0), oma=c(0,0,0,0))
 levelplot(plotStack,ylab=xlab,xlab=NULL,scales=list(draw=FALSE),maxpixels = 2e5,
-          col.regions=hcl.colors(255,palette=pal))
+          col.regions=hcl.colors(255,palette=cpal))
 dev.off()
 
 
@@ -211,14 +211,14 @@ if(doSDs){
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4sd",the_scale,"std",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  plot(sds[[1]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette=pal)))
+  plot(sds[[1]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette=cpal)))
   plot(st_geometry(zonesS),add=T)
   dev.off()
   
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4sd",the_scale,"mean",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  plot(means[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette=pal))
+  plot(means[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette=cpal))
   plot(st_geometry(zonesS),add=T)
   dev.off()
   
