@@ -8,6 +8,9 @@ library(ade4)        # For NMDS
 library(vegan)       # For NMDS
 library(dplyr)
 library(tidyr)
+library(corrplot)
+library(stringr)
+
 
 # -------------------------------------------------------------------------
 
@@ -49,9 +52,7 @@ str(all_stats_wide_copy)
 
 # -------------------------------------------------------------------------
 
-numClusters <-8
-library(corrplot)
-library(stringr)
+numClusters <-5
 
 # -------------------------------------------------------------------------
 
@@ -69,7 +70,7 @@ ecoSets = setdiff(c("all",unique(outMatS$nameEco)),c(NA))
 
 pal = 'RdYlBu'
 for (ec in ecoSets){
-  #ec="NorthernArctic"
+  #ec="all"
   if(ec=="all"){
     dw <- spread(subset(outMatS,!is.na(mean),select=-nameEco), sce, mean)
   }else{
@@ -89,11 +90,34 @@ for (ec in ecoSets){
   newcolours <- mycolors[ord]
   
   pdf(paste0("outputs/figures/corPlotShade",ec,".pdf"),width=9,height=9)
-  print(corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="shade",
+  print(corrplot(cm,tl.col=newcolours, order = "hclust",hclust.method="complete", addrect = numClusters,method="shade",
            is.corr=FALSE, col=hcl.colors(255,palette=pal)))
   dev.off()
   
   pdf(paste0("outputs/figures/corPlotNums",ec,".pdf"),width=15,height=15)
+  print(corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="number"))
+  dev.off()
+  
+}
+#look within spatial scales
+str(outMatS)
+sc<-c(2,5,10,20,40)
+for (s in sc){
+  #s=2
+  dw <- subset(outMatS,!is.na(mean)&grepl(s,sce,fixed=T),select=-nameEco)
+  if(s==2){
+    dw <- subset(dw,!grepl(20,sce,fixed=T))
+    
+  }
+  dw <- spread(dw, sce, mean)
+  
+  cm =cor(subset(dw,select=-paID),method="spearman",use="pairwise.complete.obs")
+  
+  print(paste(s,min(cm)))
+  ord <- corrMatOrder(cm, order="hclust")
+  newcolours <- mycolors[ord]
+  
+  pdf(paste0("outputs/figures/corPlotNums",s,".pdf"),width=15,height=15)
   print(corrplot(cm,tl.col=newcolours, order = "hclust", addrect = numClusters,method="number"))
   dev.off()
   

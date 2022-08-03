@@ -3,6 +3,7 @@
 
 # Load libraries
 library(raster)      # For raster casting from matrix values
+landscape <- raster("data/CombinedCosts/allCostsLayer.tif")
 
 # -------------------------------------------------------------------------
 

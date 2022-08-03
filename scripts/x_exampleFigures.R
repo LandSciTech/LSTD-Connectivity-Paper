@@ -19,8 +19,8 @@ inDir = "data/pa4025"
 exQuality=raster(paste0(inDir,"/newQuality.tif"))
 exQuality=exQuality/100
 
-paBoundR = raster(paste0(inDir,"/newPA.tif"))
-paBound = rasterToPolygons(paBoundR,dissolve=T)
+dim(exQuality)
+plot(exQuality)
 
 oneMap = exQuality;oneMap[exQuality>=0]=1
 #set paBoundR to larger area to better see variation

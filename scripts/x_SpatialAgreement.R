@@ -26,9 +26,16 @@ writeRaster(countryR, "outputs/rasters/countryR.tif",overwrite=T)
 zones = st_read("./data/Ecozones")
 zones = st_transform(zones,crs(H))
 
+#Mont Tremblant example
+#Example landcover map
+paBoundR = raster(paste0(inDir,"/newPA.tif"))
+paBound = rasterToPolygons(paBoundR,dissolve=T)
+
+
+
 if(doBigPlots){
   plotStack = c(rast(H),rast(N))
-  names(plotStack)= c("a) with human footprint","b) without human footprint")
+  names(plotStack)= c("a) With Human Footprint","b) Without Human Footprint")
   plotStack[[1]] = plotStack[[1]]*rast(countryR)
   plotStack[[2]] = plotStack[[2]]*rast(countryR)
   plotStack = 1-plotStack/1000
@@ -39,6 +46,8 @@ if(doBigPlots){
       width=9,height=5)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
   plot(plotStack[[1]],axes=F,main=names(plotStack)[[1]],col=hcl.colors(100,palette=cpal))
+  plot(st_geometry(zones),add=T)
+  plot(paBound,add=T,col="black")
   north(xy="topright")
   sbar(d=1000*1000,xy="right",type="bar",label=c(0,500,1000),below="km")
   dev.off()
@@ -47,11 +56,11 @@ if(doBigPlots){
       width=9,height=5)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
   plot(plotStack[[2]],axes=F,main=names(plotStack)[[2]],col=hcl.colors(100,palette=cpal))
+  plot(st_geometry(zones),add=T)
+  plot(paBound,add=T,col="black")
   north(xy="topright")
   sbar(d=1000*1000,xy="right",type="bar",label=c(0,500,1000),below="km")
   dev.off()
-  
-  
   
   pdf(paste0("outputs/figures","/fig1Zones.pdf"),
       width=9,height=5)
@@ -166,7 +175,7 @@ plotStack[]
 pdf(paste0("outputs/figures","/fig5Maps",selectTerm,"std",doStandardization,".pdf"),
     width=8,height=3)
 if(doStandardization){
-  xlab = "ratio percentiles"
+  xlab = "ratio perecentiles"
 }else{
   xlab="raw percentiles"
 }
@@ -193,14 +202,14 @@ if(doSDs){
   sdSet =     outSet[grepl("sd",outSet,fixed=T)&grepl(paste0("std",doStandardization),outSet,fixed=T)]
   meanSet =     outSet[grepl("mean",outSet,fixed=T)&grepl(paste0("std",doStandardization),outSet,fixed=T)]
   
-  sds = stack(paste0(resultDir,"/derived/",sdSet))
-  names(sds)=sdSet
+  sds = stack(paste0(resultDir,"/derived/",sdSet[1]))
+  names(sds)=sdSet[1]
   plot(sds,col=rev(hcl.colors(255,palette="RdYlBu")))
   plot(st_geometry(zonesS),add=T)
   
   hcl.pals()
-  means = stack(paste0(resultDir,"/derived/",meanSet))
-  names(means)=meanSet
+  means = stack(paste0(resultDir,"/derived/",meanSet[1]))
+  names(means)=meanSet[1]
   
   cStack = stack(H,Anthro,means[[1]],sds[[1]])
   names(cStack)=c("Quality","Human Footprint","mean","sd")
@@ -211,28 +220,28 @@ if(doSDs){
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4sd",the_scale,"std",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  plot(sds[[1]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette=cpal)))
+  plot(sds[[1]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette="Reds")),colNA="Gray")#rev(hcl.colors(255,palette=cpal)))
   plot(st_geometry(zonesS),add=T)
   dev.off()
   
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4sd",the_scale,"mean",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  plot(means[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette=cpal))
+  plot(means[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette=cpal),colNA="Gray")
   plot(st_geometry(zonesS),add=T)
   dev.off()
   
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4quality",the_scale,"mean",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  plot(cStack[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette="Reds"))
+  plot(cStack[[1]],axes=F,horizontal=T,nr=1,col=hcl.colors(255,palette=cpal),colNA="Gray")
   plot(st_geometry(zonesS),add=T)
   dev.off()
   
   pdf(paste0(gsub("rasters","figures",resultDir,fixed=T),"/fig4footprint",the_scale,"mean",doStandardization,".pdf"),
       width=size*widthS,height=size)
   par(mar=c(0,0,0,0), oma=c(0,0,0,0))
-  plot(cStack[[2]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette="Reds")))
+  plot(cStack[[2]],axes=F,horizontal=T,nr=1,col=rev(hcl.colors(255,palette="Reds")),colNA="Gray")
   plot(st_geometry(zonesS),add=T)
   dev.off()
 }
