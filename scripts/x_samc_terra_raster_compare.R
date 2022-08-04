@@ -10,8 +10,8 @@ library(ggplot2)
 # ncores used in instance
 ncores <- parallel::detectCores()
 
-displacement <- 1#10#  #exponential kernel scale
-t <- 40#1000# #SAMC time/scale
+displacement <- 10#1#  #exponential kernel scale
+t <- 1000#40# #SAMC time/scale
 
 # change default theme
 new_theme <- theme_classic()+
@@ -186,7 +186,7 @@ plot(all_bm %>% filter(!grepl("samc", expression)),type="boxplot")+
   scale_x_discrete(limits = grep("samc",
                                  unique(names(all_bm$expression)),
                                  invert = TRUE, value = TRUE))+
-  facet_wrap(~ncores,labeller=label_both)+xlab("method & example landscape")+ylab("processing time")
+  facet_wrap(~ncores,labeller=label_both)+xlab("method & landscape width")+ylab("processing time")
 dev.off()
 
 pdf(paste0("outputs/figures/focal_compareMemory.pdf"),width=8,height=4)
@@ -200,7 +200,7 @@ all_bm %>% filter(!grepl("samc", expression)) %>%
   scale_x_discrete(limits =grep("samc",
                                 unique(names(all_bm$expression)),
                                 invert = TRUE, value = TRUE))+
-  facet_wrap(~ncores,labeller=label_both)+labs(x = "method & example landscape",y="memory allocation")
+  facet_wrap(~ncores,labeller=label_both)+labs(x = "method & landscape width",y="memory allocation")
 dev.off()
 
 pdf(paste0("outputs/figures/samc_compareTime.pdf"),width=8,height=4)
@@ -212,7 +212,7 @@ plot(all_bm %>% filter(grepl("samc", expression)),type="boxplot")+
   scale_x_discrete(limits = grep("samc",
                                  unique(names(all_bm$expression)),
                                  invert = FALSE, value = TRUE))+
-  facet_wrap(~ncores,labeller=label_both)+xlab("method & example landscape")+ylab("processing time")
+  facet_wrap(~ncores,labeller=label_both)+xlab("method & landscape width")+ylab("processing time")
 dev.off()
 
 pdf(paste0("outputs/figures/samc_compareMemory.pdf"),width=8,height=4)
@@ -226,5 +226,5 @@ all_bm %>% filter(grepl("samc", expression)) %>%
   scale_x_discrete(limits =grep("samc",
                                 unique(names(all_bm$expression)),
                                 invert = FALSE, value = TRUE))+
-  facet_wrap(~ncores,labeller=label_both)+xlab("method & example landscape")+ylab("processing time")
+  facet_wrap(~ncores,labeller=label_both)+xlab("method & landscape width")+ylab("processing time")
 dev.off()
