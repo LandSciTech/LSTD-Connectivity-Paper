@@ -1,5 +1,8 @@
+#devtools::install_github("LandSciTech/LSTDConnect")
+#devtools::install_github("LandSciTech/pfocal")
 
 library(raster)
+library(terra)
 library(pfocal)
 library(samc)
 library(LSTDConnect)
@@ -181,7 +184,7 @@ for(i in 1:length(cCoreSets)){
   
 }
 
-pdf(paste0("outputs/figures/focal_compareTime.pdf"),width=8,height=4)
+pdf(paste0("outputs/figures/focal_compareTime",ncores,".pdf"),width=8,height=4)
 plot(all_bm %>% filter(!grepl("samc", expression)),type="boxplot")+
   scale_x_discrete(limits = grep("samc",
                                  unique(names(all_bm$expression)),
@@ -189,7 +192,7 @@ plot(all_bm %>% filter(!grepl("samc", expression)),type="boxplot")+
   facet_wrap(~ncores,labeller=label_both)+xlab("method & landscape width")+ylab("processing time")
 dev.off()
 
-pdf(paste0("outputs/figures/focal_compareMemory.pdf"),width=8,height=4)
+pdf(paste0("outputs/figures/focal_compareMemory",ncores,".pdf"),width=8,height=4)
 all_bm %>% filter(!grepl("samc", expression)) %>% 
   mutate(x = names(expression), mem = mem_alloc) %>% 
   ggplot(aes(x, mem_alloc))+
@@ -203,7 +206,7 @@ all_bm %>% filter(!grepl("samc", expression)) %>%
   facet_wrap(~ncores,labeller=label_both)+labs(x = "method & landscape width",y="memory allocation")
 dev.off()
 
-pdf(paste0("outputs/figures/samc_compareTime.pdf"),width=8,height=4)
+pdf(paste0("outputs/figures/samc_compareTime",ncores,".pdf"),width=8,height=4)
 plot(all_bm %>% filter(grepl("samc", expression)),type="boxplot")+
   bench::scale_y_bench_time(
     breaks = bench::as_bench_time(c("1s", "5s", "10s","50s", 
@@ -215,7 +218,7 @@ plot(all_bm %>% filter(grepl("samc", expression)),type="boxplot")+
   facet_wrap(~ncores,labeller=label_both)+xlab("method & landscape width")+ylab("processing time")
 dev.off()
 
-pdf(paste0("outputs/figures/samc_compareMemory.pdf"),width=8,height=4)
+pdf(paste0("outputs/figures/samc_compareMemory",ncores,".pdf"),width=8,height=4)
 all_bm %>% filter(grepl("samc", expression)) %>% 
   mutate(x = names(expression), mem = mem_alloc) %>% 
   ggplot(aes(x, mem_alloc))+
