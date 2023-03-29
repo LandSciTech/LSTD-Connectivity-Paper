@@ -103,6 +103,12 @@ samc_bm <- bench::mark(min_iterations = 5, check = FALSE,
                                                 occ = lands_100[[3]])
     gc()
   },
+  "samc_3_100" = {
+    samc_obj_custom3 <- psamc::psamc_populate(geo_data=resist_100_mat, kernel=matrix(1, 3, 3),
+                                              absorption=mort_100_mat)
+    short_disp_custom3 <- psamc::psamc_run(lands_100[[3]],samc_obj_custom3,steps=t)
+    gc()
+  },
   "samc_500" = {
     samc_obj <- samc::samc(data = resist_500_mat,
                            absorption = mort_500_mat,
@@ -119,6 +125,12 @@ samc_bm <- bench::mark(min_iterations = 5, check = FALSE,
     short_disp_custom <- LSTDConnect::distribution(time = t,
                                                 samc = samc_obj_custom,
                                                 occ = lands_500[[3]])
+    gc()
+  },
+  "samc_3_500" = {
+    samc_obj_custom3 <- psamc::psamc_populate(geo_data=resist_500_mat, kernel=matrix(1, 3, 3),
+                                              absorption=mort_500_mat)
+    short_disp_custom3 <- psamc::psamc_run(lands_500[[3]],samc_obj_custom3,steps=t)
     gc()
   },
   "samc_1000" = {
@@ -139,6 +151,12 @@ samc_bm <- bench::mark(min_iterations = 5, check = FALSE,
                                                 occ = lands_1000[[3]])
     gc()
   },
+  "samc_3_1000" = {
+    samc_obj_custom3 <- psamc::psamc_populate(geo_data=resist_1000_mat, kernel=matrix(1, 3, 3),
+                                              absorption=mort_1000_mat)
+    short_disp_custom3 <- psamc::psamc_run(lands_1000[[3]],samc_obj_custom3,steps=t)
+    gc()
+  },
   "samc_2_full" = {
     samc_obj_custom <- LSTDConnect::samc(resistance = resist_mat,
                                                absorption = mort_mat,
@@ -146,6 +164,12 @@ samc_bm <- bench::mark(min_iterations = 5, check = FALSE,
     short_disp_custom <- LSTDConnect::distribution(time = t,
                                                 samc = samc_obj_custom,
                                                 occ = lands_full[[3]])
+    gc()
+  },
+  "samc_3_full" = {
+    samc_obj_custom3 <- psamc::psamc_populate(geo_data=resist_mat, kernel=matrix(1, 3, 3),
+                                              absorption=mort_mat)
+    short_disp_custom3 <- psamc::psamc_run(lands_full[[3]],samc_obj_custom3,steps=t)
     gc()
   })
 

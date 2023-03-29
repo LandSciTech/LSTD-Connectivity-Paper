@@ -402,3 +402,15 @@ plot_spatial_agreement <- function(scale_param, standardize = TRUE, countryR = "
   raster::removeTmpFiles(0)
   return(NULL)
 }
+
+reorient<-function(inVec,H){
+  #inVec=Bh5Alt$population
+  dims=dim(H)[1:2]
+  inVec=matrix(inVec,dims[1],dims[2])
+  inVec= t(apply(inVec, 2, rev))
+  out = H;out@data@values=inVec
+  out=flip(out,direction="y")
+  return(out)
+  #plot(stack(H,out))
+}
+

@@ -66,7 +66,6 @@ if(runCalibration){
                 template = cPatches)
     
     tSet$meanDisplacement[i] = cellStats(dd*short_disp_map/cellStats(short_disp_map,"sum"),"sum")
-    tSet$survival = 
   }
   
   tSet

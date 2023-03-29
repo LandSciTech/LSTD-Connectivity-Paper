@@ -3,6 +3,7 @@ library(pfocal)
 library(psamc)
 library(raster)
 
+source("scripts/0_helper_functions.R")
 #Example H
 H <- LSTDConnect::ghm/100 
 res(H) #1km resolution
@@ -22,8 +23,6 @@ plot(Bh5$occ)
 #SAMC B new implementation
 samc_alt <- psamc_populate(geo_data=as.matrix(resistance), kernel=matrix(1, 3, 3),absorption=as.matrix(mortality))
 Bh5Alt <- psamc_run(as.matrix(H),samc_alt,steps=t)
-str(Bh5Alt)
-str(Bh5R)
 
 dim(H)
 Bh5R = reorient(Bh5Alt$population,H)
