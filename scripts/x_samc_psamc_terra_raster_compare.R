@@ -18,6 +18,7 @@ displacement <- 10#1#  #exponential kernel scale
 t <- 1000#40# #SAMC time/scale
 
 landscape <- raster("data/KennedyGHM100.tif")
+
 landscape[is.na(landscape)] <- 0
 plot(landscape)
 dim(landscape)
@@ -88,9 +89,9 @@ samc_bm <- bench::mark(min_iterations = 5, check = FALSE,
   "samc_100" = {
     samc_obj <- samc::samc(data = resist_100_mat,
                            absorption = mort_100_mat,
-                           tr_args = tr_list)   
+                           model = tr_list)   
     short_disp <- samc::distribution(samc = samc_obj,
-                                     occ = lands_100[[3]],
+                                     init = lands_100[[3]],
                                      time = t)
     gc()
   },
@@ -112,9 +113,9 @@ samc_bm <- bench::mark(min_iterations = 5, check = FALSE,
   "samc_500" = {
     samc_obj <- samc::samc(data = resist_500_mat,
                            absorption = mort_500_mat,
-                           tr_args = tr_list) 
+                           model = tr_list) 
     short_disp <- samc::distribution(samc = samc_obj,
-                                     occ = lands_500[[3]],
+                                     init = lands_500[[3]],
                                      time = t)
     gc()
   },
@@ -136,9 +137,9 @@ samc_bm <- bench::mark(min_iterations = 5, check = FALSE,
   "samc_1000" = {
     samc_obj <- samc::samc(data = resist_1000_mat,
                            absorption = mort_1000_mat,
-                           tr_args = tr_list)
+                           model = tr_list)
     short_disp <- samc::distribution(samc = samc_obj,
-                                     occ = lands_1000[[3]],
+                                     init = lands_1000[[3]],
                                      time = t)
     gc()
   },
@@ -195,7 +196,7 @@ new_theme <- theme_bw()+
 theme_set(new_theme)
 
 # load from saved file
-cCoreSets<- c(8,48) # set up for varying number of cores
+cCoreSets<- c(8) # set up for varying number of cores
 for(i in 1:length(cCoreSets)){
   ncores = cCoreSets[i]
   all_bm_bit <- readRDS(paste0("data/all_benchmarks_", ncores, ".rds"))
@@ -219,6 +220,7 @@ plot(all_bm %>% filter(!grepl("samc", expression)),type="boxplot")+
 dev.off()
 
 pdf(paste0("outputs/figures/focal_compareMemory",ncores,".pdf"),width=8,height=4)
+
 all_bm %>% filter(!grepl("samc", expression)) %>% 
   mutate(x = names(expression), mem = mem_alloc) %>% 
   ggplot(aes(x, mem_alloc))+
@@ -255,5 +257,5 @@ all_bm %>% filter(grepl("samc", expression)) %>%
   scale_x_discrete(limits =grep("samc",
                                 unique(names(all_bm$expression)),
                                 invert = FALSE, value = TRUE))+
-  facet_wrap(~ncores,labeller=label_both)+xlab("method & landscape width")+ylab("processing time")
+  facet_wrap(~ncores,labeller=label_both)+xlab("method & landscape width")+ylab("memory")
 dev.off()
