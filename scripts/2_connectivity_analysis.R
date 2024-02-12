@@ -23,8 +23,8 @@ t <- c(40,250,1000,4001,16007) # NOTE: t is calibrated for 300m raster
 mean_displacement <- c(2, 5, 10, 20, 40)
 
 # For testing
-t <- t[1]
-mean_displacement <- mean_displacement[1]
+# t <- t[1]
+# mean_displacement <- mean_displacement[1]
 
 t_df <- tibble(t = t, 
                mean_displacement = (mean_displacement * 1000)/res(landscape)[1]) 
