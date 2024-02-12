@@ -15,8 +15,8 @@ landscape <- raster("data/CombinedCosts/allCostsLayer.tif")
 source("scripts/0_helper_functions.R")
 
 # Load the cost map
-landscape <- raster("../data/CombinedCosts/allCostsLayer.tif")
-landscape_no_HF <- raster("../data/CombinedCosts/naturalCostsLayer.tif")
+landscape <- raster("data/CombinedCosts/allCostsLayer.tif")
+landscape_no_HF <- raster("data/CombinedCosts/naturalCostsLayer.tif")
 
 # Load protected area raster
 protected_area <- raster("data/paRaster_reproj_300.tif")
