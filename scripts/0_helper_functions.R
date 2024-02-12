@@ -15,9 +15,19 @@ scale_raster <- function(to_be_scaled,
                          the_min, the_max){
   to_be_scaled_min <- cellStats(to_be_scaled, min, na.rm = TRUE)
   to_be_scaled_max <- cellStats(to_be_scaled, max, na.rm = TRUE)
-  scaled <- 
-    ((to_be_scaled - to_be_scaled_min) * (the_max - the_min) / 
-       ((to_be_scaled_max - to_be_scaled_min)) + the_min)
+  
+  # doing it this way caused 4 copies to be written to disk
+  # scaled <- 
+  #   ((to_be_scaled - to_be_scaled_min) * (the_max - the_min) / 
+  #      ((to_be_scaled_max - to_be_scaled_min)) + the_min)
+  
+  # using calc is faster and takes up less space on disk
+  scale_fun <- function(x){
+      ((x - to_be_scaled_min) * (the_max - the_min) /
+         ((to_be_scaled_max - to_be_scaled_min)) + the_min)
+  }
+  
+  scaled <- calc(to_be_scaled, scale_fun)
   return(scaled)
 }
 
