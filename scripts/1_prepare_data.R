@@ -3,8 +3,6 @@
 
 # Load libraries
 library(raster)      # For raster casting from matrix values
-landscape <- raster("data/CombinedCosts/allCostsLayer.tif")
-
 # -------------------------------------------------------------------------
 
 # gdalwarp -overwrite -tr 300 300 -te 3489899.158 463834.515 9214799.158 5442034.515 

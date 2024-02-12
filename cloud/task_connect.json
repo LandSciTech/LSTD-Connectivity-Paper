@@ -1,0 +1,46 @@
+{
+  "id": "caribou-demog_sens_batch<batch>",
+  "commandLine": "bash task_scripts/run_caribou<batch>.sh",
+	"outputFiles": [
+	  {
+    "destination": {
+      "container": {
+        "containerUrl": "<SASURL>",
+        "path": "logs"
+        }
+      },
+    "filePattern": "*.out",
+    "uploadOptions": {
+      "uploadCondition": "taskcompletion"
+      }
+    },
+	  {
+		"destination": {
+			"container": {
+				"containerUrl": "<SASURL>"
+			}
+		},
+		"filePattern": "**/*.Rds",
+		"uploadOptions": {
+			"uploadCondition": "taskcompletion"
+		}
+	}
+	],
+
+	"resourceFiles": [{
+		"autoStorageContainerName": "sendicott"
+	}
+
+	],
+
+	"containerSettings": {
+    "imageName": "see24/r-bspm-git-jags-cariboudemogsens:latest",
+    "containerRunOptions": "--rm -v $AZ_BATCH_TASK_WORKING_DIR:/Caribou-Demographic-Projection-Paper/results:rw"
+	},
+    "userIdentity": {
+        "autoUser": {
+            "scope": "pool",
+            "elevationLevel": "admin"
+        }
+    }
+}
