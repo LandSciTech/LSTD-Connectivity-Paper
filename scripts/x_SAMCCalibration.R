@@ -66,7 +66,8 @@ if(runCalibration){
                 template = cPatches)
     
     tSet$meanDisplacement[i] = cellStats(dd*short_disp_map/cellStats(short_disp_map,"sum"),"sum")
-    tSet$survival = 
+    # Note: I hard coded this 999 to make renv work because it was blank before
+    tSet$survival = 999
   }
   
   tSet
