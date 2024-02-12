@@ -124,7 +124,7 @@ run_connectivity <- function(landscape, parameters, t_df, ext = NULL,
                         t_df$scale))
   
   paths <- file.path(out_dir, paste0(out$sce, ext, ".tif") )
-  writeRaster(stack(out$output_map), filename = paths, bylayer = TRUE, 
+  writeRaster(stack(out$output_map), filename = paths, bylayer = FALSE, 
               overwrite = TRUE)
   raster::removeTmpFiles(h = 0)
   out$output_map <- paths
