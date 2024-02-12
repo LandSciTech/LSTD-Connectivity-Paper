@@ -67,22 +67,27 @@ protected_area[landscape_no_HF==1] <- NA
 # plot(protected_area)
 
 # -------------------------------------------------------------------------
-
-# plot(landscape)
-# BC_extent <- drawExtent()
-
-BC_landscape <- crop(landscape, BC_extent)
-BC_landscape_no_HF <- crop(landscape_no_HF, BC_extent)
-BC_protected_areas <- crop(protected_area, BC_extent)
-
-# BC_pa_IDs <- unique(freq(BC_protected_areas)[,1])
+# Not running on cloud
+# # plot(landscape)
+# # BC_extent <- drawExtent()
 # 
-# BC_protected_area_df <- protected_area_df %>% 
-#   filter(paID %in% BC_pa_IDs)
+# BC_landscape <- crop(landscape, BC_extent)
+# BC_landscape_no_HF <- crop(landscape_no_HF, BC_extent)
+# BC_protected_areas <- crop(protected_area, BC_extent)
+# 
+# # BC_pa_IDs <- unique(freq(BC_protected_areas)[,1])
+# #
+# # BC_protected_area_df <- protected_area_df %>%
+# #   filter(paID %in% BC_pa_IDs)
+# 
+# writeRaster(BC_landscape, "outputs/tmp/BC_landscape.tif",
+#             overwrite = TRUE)
+# writeRaster(BC_landscape_no_HF, "outputs/tmp/BC_landscape_no_HF.tif",
+#             overwrite = TRUE)
+# writeRaster(BC_protected_areas, "outputs/tmp/BC_protected_areas.tif",
+#             overwrite = TRUE)
 
-writeRaster(BC_landscape, "outputs/tmp/BC_landscape.tif",
-            overwrite = TRUE)
-writeRaster(BC_landscape_no_HF, "outputs/tmp/BC_landscape_no_HF.tif",
-            overwrite = TRUE)
-writeRaster(BC_protected_areas, "outputs/tmp/BC_protected_areas.tif",
-            overwrite = TRUE)
+# For testing
+# landscape <- raster("outputs/tmp/BC_landscape.tif")
+# landscape_no_HF <- raster("outputs/tmp/BC_landscape_no_HF.tif")
+# protected_area <- raster("outputs/tmp/BC_protected_areas.tif")
