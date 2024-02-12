@@ -18,10 +18,17 @@ jobName="sendicott_job_connect"
 
 poolName="sendicott_connectivity"
 
-az storage copy -d $sasurl -s cloud/task_scripts --recursive
+az storage copy -d $sasurl -s cloud/run_connect.sh
+az storage copy -d $sasurl -s ../LSTD-Connectivity-Paper --recursive
+
+# TODO: modify scripts to add subnet id and other secrets from here
+# update placeholders in jsons
+sed 's/<sastoken>/'${sastoken//&/\\&}'/g' cloud/task_connect.json > cloud/task_to_use.json
 
 #### Create pool, job, tasks ##########################
-az batch pool create --json-file cloud/pool_json/caribou_add_pool1.json
+# AWS machine was m5a.4xlarge with 16 vCPU and 64 gb RAM
+
+az batch pool create --json-file cloud/pool_connect.json
 az batch job create --pool-id $poolName --id $jobName
 
 az batch task create --json-file cloud/task_jsons/caribouDemo$i.json --job-id $jobName

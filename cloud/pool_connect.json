@@ -21,8 +21,8 @@
 		  "policy": "regional"
 		}
 	},
-		"targetDedicatedNodes": "<n_nodes>",
-		"taskSlotsPerNode": 8,
+		"targetDedicatedNodes": 1,
+		"taskSlotsPerNode": 1,
 	"networkConfiguration": {
 		"subnetId":"<subnetId>"
 		}
