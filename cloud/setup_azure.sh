@@ -22,7 +22,7 @@ sasurl=https://ecdcwls.blob.core.windows.net/sendicott/?$sastoken
 
 az storage copy -d $sasurl -s cloud/run_connect.sh
 az storage copy -d $sasurl -s make.R
-az storage copy -d $sasurl -s renv.lock
+az storage copy -d $sasurl -s DESCRIPTION
 az storage copy -d $sasurl -s data --recursive
 az storage copy -d $sasurl -s scripts --recursive
 az storage copy -d $sasurl -s outputs --recursive
