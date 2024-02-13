@@ -14,7 +14,7 @@
 		"containerConfiguration": {
       "type": "dockerCompatible",
 			"containerImageNames": [
-			"rocker/r-bspm:jammy"
+			"rocker/r2u:jammy"
 			]
 		},
 		"nodePlacementConfiguration": {

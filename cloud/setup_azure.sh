@@ -22,6 +22,7 @@ sasurl=https://ecdcwls.blob.core.windows.net/sendicott/?$sastoken
 
 az storage copy -d $sasurl -s cloud/run_connect.sh
 az storage copy -d $sasurl -s make.R
+az storage copy -d $sasurl -s renv.lock
 az storage copy -d $sasurl -s data --recursive
 az storage copy -d $sasurl -s scripts --recursive
 az storage copy -d $sasurl -s outputs --recursive
@@ -36,21 +37,23 @@ sed 's,<SASURL>,'${sasurl//&/\\&}',g' cloud/task_connect.json > cloud/task_to_us
 sed 's,<subnetId>,'${subnetid//&/\\&}',g' cloud/pool_connect.json\
 | sed 's,<id>,'${poolName}',g'> cloud/pool_to_use.json
 
-az batch pool create --json-file cloud/pool_connect.json
+az batch pool create --json-file cloud/pool_to_use.json
 az batch job create --pool-id $poolName --id $jobName
 
-az batch task create --json-file cloud/task_jsons/caribouDemo$i.json --job-id $jobName
+az batch task create --json-file cloud/task_to_use.json --job-id $jobName
 
 #### Monitor tasks ############################
 
 # details for a single task filtered by query
 az batch task show --job-id $jobName \
---task-id caribou-demog_sens_batch1 \
+--task-id connectivity-rerun \
 --query "{state: state, executionInfo: executionInfo}" --output yaml
 
+# az batch task delete --job-id $jobName --task-id connectivity-rerun
+# az batch task reactivate --job-id $jobName --task-id connectivity-rerun
+
 # download output file for a task
-az batch task file download --task-id caribou-demog_sens_batch1 \
---job-id $jobName --file-path "wd/nohup_1.out" --destination "./nohup_1.out"
+az batch task file download --task-id connectivity-rerun --job-id $jobName --file-path "stdout.txt" --destination "cloud/stdout.txt"
 
 # List of all tasks and their state
 # See here for making fancy queries https://jmespath.org/tutorial.html

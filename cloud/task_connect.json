@@ -34,7 +34,7 @@
 	],
 
 	"containerSettings": {
-    "imageName": "rocker/r-bspm:jammy",
+    "imageName": "rocker/r2u:jammy",
     "containerRunOptions": "--rm"
 	},
     "userIdentity": {
