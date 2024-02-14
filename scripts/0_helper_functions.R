@@ -138,7 +138,7 @@ run_connectivity <- function(landscape, parameters, t_df, ext = NULL,
   writeRaster(stack(out$output_map), filename = paths, bylayer = TRUE, 
               overwrite = TRUE)
   out$output_map <- paths
-  
+  removeTmpFiles(0)
   return(out)
   
 }

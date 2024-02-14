@@ -18,12 +18,21 @@ source('scripts/0_helper_functions.R')
 landscape <- raster("outputs/tmp/costmap_can_mask_aggregated.tif")
 landscape_no_HF <- raster("outputs/tmp/costmap_can_mask_aggregated_no_HF.tif")
 protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
-protected_area_df <- read.csv("data/CanadianPAsLookupSubset.csv")
 
 # For testing use small landscape
 # landscape <- raster("outputs/tmp/BC_landscape.tif")
 # landscape_no_HF <- raster("outputs/tmp/BC_landscape_no_HF.tif")
 # protected_area <- raster("outputs/tmp/BC_protected_areas.tif")
+# # need to set so behaves like large raster when testing
+# raster::rasterOptions(todisk = TRUE)
+
+protected_area_df <- read.csv("data/CanadianPAsLookupSubset.csv")
+
+# save 1-landscape to disk so doesn't get deleted with tmp rasts
+landscape_1 <- calc(landscape, fun = function(x){1-x}, 
+                    filename = "outputs/tmp/BC_landscape_1.tif")
+landscape_no_HF_1 <- calc(landscape_no_HF, fun = function(x){1-x}, 
+                          filename = "outputs/tmp/BC_landscape_no_HF_1.tif")
 
 # for 300 m raster, t <- c(40,250,1000,4001,16007)
 # for 900 m raster, t <- c(4,28,111,444,1778)
@@ -89,9 +98,9 @@ parameters <- parameters %>%
   filter(!(sce %in% c("NL", "CH", "CL")))
 
 # Run on grid
-out_df <- analyse_connectivity(parameters, 1-landscape, t_df, 
+out_df <- analyse_connectivity(parameters, landscape_1, t_df, 
                                ext = NULL)
-out_df_no_HF <- analyse_connectivity(parameters, 1-landscape_no_HF, t_df, 
+out_df_no_HF <- analyse_connectivity(parameters, landscape_no_HF_1, t_df, 
                                      ext = "no_HF")
 
 saveRDS(out_df, "outputs/objects/out_df.rds")
