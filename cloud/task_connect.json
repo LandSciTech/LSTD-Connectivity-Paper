@@ -9,7 +9,7 @@
         "path": "logs"
         }
       },
-    "filePattern": "*.out",
+    "filePattern": "*.txt",
     "uploadOptions": {
       "uploadCondition": "taskcompletion"
       }
@@ -17,14 +17,39 @@
 	  {
 		"destination": {
 			"container": {
-				"containerUrl": "<SASURL>"
+				"containerUrl": "<SASURL>",
+				"path": "outputs/tmp"
 			}
 		},
-		"filePattern": "outputs/.*",
+		"filePattern": "outputs/tmp/*.tif",
 		"uploadOptions": {
 			"uploadCondition": "taskcompletion"
-		}
-	}
+		  }
+	  },
+	  {
+		"destination": {
+			"container": {
+				"containerUrl": "<SASURL>",
+				"path": "outputs/rasters"
+			}
+		},
+		"filePattern": "outputs/rasters/*.tif",
+		"uploadOptions": {
+			"uploadCondition": "taskcompletion"
+		  }
+	  },
+	  {
+		"destination": {
+			"container": {
+				"containerUrl": "<SASURL>",
+				"path": "outputs/objects"
+			}
+		},
+		"filePattern": "outputs/objects/*.tif",
+		"uploadOptions": {
+			"uploadCondition": "taskcompletion"
+		  }
+	  }
 	],
 
 	"resourceFiles": [{
