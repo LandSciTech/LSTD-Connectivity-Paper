@@ -18,3 +18,5 @@ Imports:
     tibble,
     tictoc,
     tidyr
+Remotes: LandSciTech/LSTDConnect,
+    LandSciTech/pfocal
