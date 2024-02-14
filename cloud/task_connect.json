@@ -9,7 +9,7 @@
         "path": "logs"
         }
       },
-    "filePattern": "*.txt",
+    "filePattern": "../*.txt",
     "uploadOptions": {
       "uploadCondition": "taskcompletion"
       }
@@ -45,7 +45,7 @@
 				"path": "outputs/objects"
 			}
 		},
-		"filePattern": "outputs/objects/*.tif",
+		"filePattern": "outputs/objects/*.rds",
 		"uploadOptions": {
 			"uploadCondition": "taskcompletion"
 		  }
