@@ -15,6 +15,10 @@ source('scripts/0_helper_functions.R')
 
 # Parameter grid ----------------------------------------------------------
 
+landscape <- raster("outputs/tmp/costmap_can_mask_aggregated.tif")
+landscape_no_HF <- raster("outputs/tmp/costmap_can_mask_aggregated_no_HF.tif")
+protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
+
 # for 300 m raster, t <- c(40,250,1000,4001,16007)
 # for 900 m raster, t <- c(4,28,111,444,1778)
 # for 1000 m raster, t <- c(4,22,90,360,1440)

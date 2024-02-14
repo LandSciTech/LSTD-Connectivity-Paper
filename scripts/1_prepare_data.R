@@ -67,9 +67,9 @@ writeRaster(protected_area, "outputs/tmp/paRaster_reproj_masked.tif",
             overwrite = TRUE)
 protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
 # -------------------------------------------------------------------------
-# Not running on cloud
-# # plot(landscape)
-# # BC_extent <- drawExtent()
+# # Not running on cloud
+# plot(landscape)
+# BC_extent <- drawExtent()
 # 
 # BC_landscape <- crop(landscape, BC_extent)
 # BC_landscape_no_HF <- crop(landscape_no_HF, BC_extent)
@@ -91,3 +91,4 @@ protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
 # landscape <- raster("outputs/tmp/BC_landscape.tif")
 # landscape_no_HF <- raster("outputs/tmp/BC_landscape_no_HF.tif")
 # protected_area <- raster("outputs/tmp/BC_protected_areas.tif")
+message("prepare_data complete")
