@@ -18,6 +18,12 @@ source('scripts/0_helper_functions.R')
 landscape <- raster("outputs/tmp/costmap_can_mask_aggregated.tif")
 landscape_no_HF <- raster("outputs/tmp/costmap_can_mask_aggregated_no_HF.tif")
 protected_area <- raster("outputs/tmp/paRaster_reproj_masked.tif")
+protected_area_df <- read.csv("data/CanadianPAsLookupSubset.csv")
+
+# For testing use small landscape
+# landscape <- raster("outputs/tmp/BC_landscape.tif")
+# landscape_no_HF <- raster("outputs/tmp/BC_landscape_no_HF.tif")
+# protected_area <- raster("outputs/tmp/BC_protected_areas.tif")
 
 # for 300 m raster, t <- c(40,250,1000,4001,16007)
 # for 900 m raster, t <- c(4,28,111,444,1778)
@@ -27,8 +33,8 @@ t <- c(40,250,1000,4001,16007) # NOTE: t is calibrated for 300m raster
 mean_displacement <- c(2, 5, 10, 20, 40)
 
 # For testing
-# t <- t[1]
-# mean_displacement <- mean_displacement[1]
+# t <- t[1:2]
+# mean_displacement <- mean_displacement[1:2]
 
 t_df <- tibble(t = t, 
                mean_displacement = (mean_displacement * 1000)/res(landscape)[1]) 
@@ -143,7 +149,7 @@ saveRDS(all_stats_final, "outputs/objects/all_stats_final.rds")
 # saveRDS(all_stats_final, "outputs/objects/all_stats_final_variant.rds")
 
 # -------------------------------------------------------------------------
-
-all_stats_final_BC <- all_stats_final %>% 
-  filter(paID %in% unique(freq(raster("outputs/tmp/BC_protected_areas.tif"))[,1]))
-saveRDS(all_stats_final_BC, "outputs/objects/all_stats_final_BC.rds")
+#  not running on cloud
+# all_stats_final_BC <- all_stats_final %>% 
+#   filter(paID %in% unique(freq(raster("outputs/tmp/BC_protected_areas.tif"))[,1]))
+# saveRDS(all_stats_final_BC, "outputs/objects/all_stats_final_BC.rds")
