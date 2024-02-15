@@ -139,6 +139,7 @@ run_connectivity <- function(landscape, parameters, t_df, ext = NULL,
               overwrite = TRUE)
   out$output_map <- paths
   removeTmpFiles(0)
+  gc()
   return(out)
   
 }
