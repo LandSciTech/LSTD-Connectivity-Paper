@@ -1,6 +1,6 @@
 {
-  "id": "connectivity-rerun-<sce>",
-  "commandLine": "bash -c 'nohup Rscript 'make.R' <sce>'",
+  "id": "connectivity-combine",
+  "commandLine": "bash run_connect.sh",
 	"outputFiles": [
 	  {
     "destination": {

@@ -1,5 +1,4 @@
-## LSTD Connectivity paper 
-## Step 1: Analyse connectivity
+# combine stats tables 
 
 # Load libraries
 library(LSTDConnect) # For custom samc
@@ -13,7 +12,7 @@ library(tibble)      # For parameter grid making
 # Source functions
 source('scripts/0_helper_functions.R')
 
-test_mode <- FALSE
+test_mode <- TRUE
 # Parameter grid ----------------------------------------------------------
 
 landscape <- raster("outputs/tmp/costmap_can_mask_aggregated.tif")
@@ -98,18 +97,61 @@ gc()
 
 # -------------------------------------------------------------------------
 
-# Remove unwanted combinations 
-parameters <- parameters %>% 
-  filter(!(sce %in% c("NL", "CH", "CL"))) %>% 
-  filter(sce == sce_use)
 
-# Run on grid
-out_df <- analyse_connectivity(parameters, landscape_1, t_df, 
-                               ext = NULL)
-out_df_no_HF <- analyse_connectivity(parameters, landscape_no_HF_1, t_df, 
-                                     ext = "no_HF")
+out_df <- list.files("outputs/objects", pattern = "out_df_..?.rds", full.names = TRUE) %>% 
+  lapply(readRDS) %>% 
+  bind_rows()
+out_df_no_HF <- list.files("outputs/objects", pattern = "out_df_no_HF.*.rds", full.names = TRUE) %>% 
+  lapply(readRDS) %>% 
+  bind_rows()
 
-saveRDS(out_df, paste0("outputs/objects/out_df_", sce_use,".rds"))
-saveRDS(out_df_no_HF, paste0("outputs/objects/out_df_no_HF_", sce_use,".rds"))
+out_df2 <- data.frame(output_map = list.files("outputs/rasters",
+                                             pattern = "..?\\d\\d?.tif",full.names = TRUE)) %>%
+  mutate(sce = basename(output_map))
 
+# out_df_no_HF <- data.frame(output_map = 
+#                              list.files(full.names = TRUE, 
+#                                         "D:/CAN_COST_LSTD_Connectivity_output_rasters/Can_Cost_noH//")) %>% 
+#   mutate(sce = stringr::str_replace(tools::file_path_sans_ext(basename(output_map)), "no_HF", ""))
 
+all_stats <- extract_stats(out_df, protected_area, 
+                           protected_area_df)
+all_stats_no_HF <- extract_stats(out_df_no_HF, protected_area, 
+                                 protected_area_df)
+
+saveRDS(all_stats, "outputs/objects/all_stats.rds")
+saveRDS(all_stats_no_HF, "outputs/objects/all_stats_no_HF.rds")
+
+# saveRDS(all_stats, "outputs/objects/all_stats_variant.rds")
+# saveRDS(all_stats_no_HF, "outputs/objects/all_stats_no_HF_variant.rds")
+
+# -------------------------------------------------------------------------
+
+all_stats <- readRDS("outputs/objects/all_stats.rds")
+all_stats_no_HF <- readRDS("outputs/objects/all_stats_no_HF.rds")
+
+# all_stats <- readRDS("outputs/objects/all_stats_variant.rds")
+# all_stats_no_HF <- readRDS("outputs/objects/all_stats_no_HF_variant.rds")
+
+all_stats_final <- all_stats %>% 
+  left_join(all_stats_no_HF,
+            c("zone", "paID", "paName", "nameEco", "patchArea", "sce"),
+            suffix = c("", "_no_HF")) %>% 
+  mutate(ratio = mean/mean_no_HF)
+
+too_small <- all_stats_final$paName[is.nan(all_stats_final$ratio)] %>% unique()
+infinite <- all_stats_final$paName[is.infinite(all_stats_final$ratio)] %>% unique()
+
+all_stats_final <- all_stats_final %>% 
+  filter(!(paName %in% c(too_small, infinite)))
+
+# all_stats_final$ratio
+
+saveRDS(all_stats_final, "outputs/objects/all_stats_final.rds")
+# saveRDS(all_stats_final, "outputs/objects/all_stats_final_variant.rds")
+
+# -------------------------------------------------------------------------
+#  not running on cloud
+# all_stats_final_BC <- all_stats_final %>% 
+#   filter(paID %in% unique(freq(raster("outputs/tmp/BC_protected_areas.tif"))[,1]))
+# saveRDS(all_stats_final_BC, "outputs/objects/all_stats_final_BC.rds")
