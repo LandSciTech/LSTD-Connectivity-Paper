@@ -65,17 +65,20 @@ done
 
 az batch task create --json-file cloud/task_connect_combine_to_use.json --job-id $jobName
 
-# az batch task reactivate --task-id connectivity-combine --job-id $jobName
+# az batch task delete --task-id connectivity-combine --job-id $jobName
 
 # for scei in ML BL MH BH E U I
 # do
 #   az batch task delete --job-id $jobName --task-id connectivity-rerun-$scei --yes
 # done
 
+# prompt auto scaleing of pool by changing time interval
+az batch pool autoscale enable --pool-id $poolName --auto-scale-evaluation-interval "PT5M"
+
 #### Monitor tasks ############################
 
 # details for a single task filtered by query
-az batch task show --job-id $jobName --task-id connectivity-rerun \
+az batch task show --job-id $jobName --task-id connectivity-combine \
 --query "{state: state, executionInfo: executionInfo}" --output yaml
 
 # az batch task delete --job-id $jobName --task-id connectivity-rerun --yes
@@ -97,7 +100,10 @@ az storage blob list -c sendicott --account-name ecdcwls --sas-token $sastoken \
 
 #### Download results and remove from storage ################################
 az storage copy -s https://ecdcwls.blob.core.windows.net/sendicott/outputs/rasters/?$sastoken \
--d outputs --recursive 
+-d "D:/Josie/LSTD-Connectivity-Paper/outputs" --recursive 
+
+az storage copy -s https://ecdcwls.blob.core.windows.net/sendicott/outputs/objects/?$sastoken \
+-d "outputs" --recursive 
 
 # NOTE removes ***everything*** from the storage container
 az storage remove -c sendicott -n outputs/objects --account-name ecdcwls --sas-token $sastoken --recursive

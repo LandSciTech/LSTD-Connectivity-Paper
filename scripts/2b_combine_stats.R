@@ -12,7 +12,7 @@ library(tibble)      # For parameter grid making
 # Source functions
 source('scripts/0_helper_functions.R')
 
-test_mode <- TRUE
+test_mode <- FALSE
 # Parameter grid ----------------------------------------------------------
 
 landscape <- raster("outputs/tmp/costmap_can_mask_aggregated.tif")

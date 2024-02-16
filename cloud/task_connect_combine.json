@@ -18,30 +18,6 @@
 		"destination": {
 			"container": {
 				"containerUrl": "<SASURL>",
-				"path": "outputs/tmp"
-			}
-		},
-		"filePattern": "outputs/tmp/*.tif",
-		"uploadOptions": {
-			"uploadCondition": "taskcompletion"
-		  }
-	  },
-	  {
-		"destination": {
-			"container": {
-				"containerUrl": "<SASURL>",
-				"path": "outputs/rasters"
-			}
-		},
-		"filePattern": "outputs/rasters/*.tif",
-		"uploadOptions": {
-			"uploadCondition": "taskcompletion"
-		  }
-	  },
-	  {
-		"destination": {
-			"container": {
-				"containerUrl": "<SASURL>",
 				"path": "outputs/objects"
 			}
 		},
