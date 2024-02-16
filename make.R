@@ -3,7 +3,11 @@
 # from the docker image is not being used so need to set here 
 options(bspm.version.check=FALSE)
 bspm::enable()
-# 
+
+options(download.file.method = "libcurl")
+options(timeout = max(300, getOption("timeout")))
+Sys.setenv(GITHUB_PAT = "<pat>")
+
 # # install required packages based on list in DESCRIPTION
 install.packages("remotes")
 remotes::install_deps()
