@@ -19,6 +19,8 @@ sastoken=`az storage container generate-sas --account-name ecdcwls --expiry $end
 
 sasurl=https://ecdcwls.blob.core.windows.net/sendicott/?$sastoken
 
+ghpat=`Rscript -e "cat(gh::gh_token())"`
+
 ### Prepare files for each task
 
 # Replace placeholders for secrets in json file
@@ -36,10 +38,12 @@ do
 done
 
 sed 's,<SASURL>,'${sasurl//&/\\&}',g' cloud/task_connect_combine.json > cloud/task_connect_combine_to_use.json
+sed 's,<pat>,'$ghpat',g' make.R > make_to_use.R
+
 
 #### Move files to container ##############
 az storage copy -d $sasurl -s cloud/run_connect.sh
-az storage copy -d $sasurl -s make.R
+az storage copy -d $sasurl -s make_to_use.R
 az storage copy -d $sasurl -s DESCRIPTION
 az storage copy -d $sasurl -s data --recursive
 az storage copy -d $sasurl -s scripts --recursive
