@@ -15,6 +15,9 @@ library(stringr)
 # -------------------------------------------------------------------------
 
  all_stats_final <- readRDS("outputs/objects/all_stats_final.rds")
+ 
+ write.csv(all_stats_final,"outputs/objects/all_stats_final.csv",row.names = F)
+ 
 #all_stats_final <- readRDS("outputs/objects/all_stats_final_variant.rds")
 
 # all_stats_final <- all_stats_final %>% filter(!(nameEco %in% c("HudsonPlains",
@@ -26,6 +29,7 @@ library(stringr)
 
 mapSubsetA <- read.csv("data/mapSetA_exptFullForV.csv")
 
+str(mapSubsetA)
 # all_stats_final <- all_stats_final %>%
 #   filter(paID %in% mapSubsetA$paID)
 
@@ -52,7 +56,7 @@ str(all_stats_wide_copy)
 
 # -------------------------------------------------------------------------
 
-numClusters <-5
+numClusters <-7
 
 # -------------------------------------------------------------------------
 
@@ -125,7 +129,7 @@ for (s in sc){
 
 
 # -------------------------------------------------------------------------
-
+if(0){
 library(vegan)
 
 #normalize data
@@ -159,3 +163,4 @@ head(data_scores)
 ggplot(data_scores, aes(x = NMDS1, y = NMDS2, label=NA)) +
   geom_point(aes(color = factor(nameEco),bg="black",size = paArea))
 
+}
